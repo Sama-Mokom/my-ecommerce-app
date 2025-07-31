@@ -15,12 +15,22 @@
           </div>
         </div>
       </div>
-      <div class="products-grid">
+      <!-- Error State -->
+      <div v-if="error" class="error-state">
+        <p>Error Loading products: {{ error }}</p>
+        <button @click="fetchProducts" class="view-all-btn">Retry</button>
+      </div>
+      <!-- Display products State -->
+      <div v-else-if="products && products.length > 0" class="products-grid">
         <ProductCard
           v-for="product in products"
           :key="product.id"
           :product="product"
         />
+      </div>
+      <!-- No Products State -->
+      <div v-else class="no-products">
+        <p>No products available in Best Selling.</p>
       </div>
     </div>
   </section>
@@ -28,50 +38,47 @@
 
 <script setup>
 import ProductCard from "./ProductCard.vue";
+import apiService from "../services/api.js";
+import { ref, onMounted } from "vue";
 
-const products = [
-  {
-    id: 9,
-    name: "The north coat",
-    image: "/src/assets/images/North coat.png",
-    discount: "",
-    price: 260,
-    originalPrice: 360,
-    rating: 5,
-    ratingCount: 65,
-  },
-  {
-    id: 10,
-    name: "Gucci duffle bag",
-    image: "/src/assets/images/Gucci duffle bag.png",
-    discount: "",
-    price: 960,
-    originalPrice: 1160,
-    rating: 4.5,
-    ratingCount: 65,
-  },
-  {
-    id: 11,
-    name: "RGB liquid CPU Cooler",
-    image: "/src/assets/images/Liquid cooling system.png",
-    discount: "",
-    price: 370,
-    originalPrice: 400,
-    rating: 5,
-    ratingCount: 99,
-  },
-  {
-    id: 12,
-    name: "Small BookShelf",
-    image: "/src/assets/images/bookshelf.png",
-    discount: "",
-    price: 375,
-    originalPrice: 400,
-    rating: 4,
-    ratingCount: 99,
-  },
-];
+const products = ref([]);
+const loading = ref(true);
+const error = ref(null);
+
+// Fetch products from API
+const fetchProducts = async () => {
+  try {
+    loading.value = true;
+    error.value = null;
+
+    //Get Best Selling Products 
+
+    const data = await apiService.getBestSellingProducts();
+    products.value = data;
+
+    // Debug: Log the first product to check image URL format
+    if (data.length > 0) {
+      console.log("First product image URL:", data[0].image);
+      console.log("Full first product:", data[0]);
+    }
+
+    console.log("Best Selling Products successfully loaded: ", data.length);
+  } catch (err) {
+    error.value = err.message;
+    console.error("Error fetching Best Selling products: ", err);
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() =>{
+  fetchProducts();
+})
+
 </script>
+
+
+
 <style scoped>
 .section-header {
   margin-left: 45px;
