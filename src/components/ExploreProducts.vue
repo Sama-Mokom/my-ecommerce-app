@@ -16,50 +16,22 @@
           </div>
         </div>
       </div>
-      <div class="products-grid large-grid">
+       <!-- Error State -->
+      <div v-if="error" class="error-state">
+        <p>Error Loading products: {{ error }}</p>
+        <button @click="fetchProducts" class="view-all-btn">Retry</button>
+      </div>
+      <!-- Display products State -->
+      <div v-else-if="products && products.length > 0" class="products-grid large-grid">
         <ProductCard 
         v-for="product in products"
         :key="product.id"
         :product="product"
         />
-        <!-- <div
-          class="product-card"
-          v-for="(product, idx) in products"
-          :key="product.name + idx"
-        >
-          <div class="product-image">
-            <span v-if="product.isNew" class="new-badge">NEW</span>
-            <img :src="product.image" :alt="product.name" />
-            <div class="product-actions">
-              <button class="action-btn"><i class="far fa-heart"></i></button>
-              <button class="action-btn"><i class="far fa-eye"></i></button>
-            </div>
-            <button class="add-to-cart">Add To Cart</button>
-          </div>
-          <div class="product-info">
-            <h3>{{ product.name }}</h3>
-            <div class="price">
-              <span class="current-price">${{ product.price }}</span>
-            </div>
-            <div class="rating">
-              <div class="stars">
-                <i
-                  v-for="i in 5"
-                  :key="i"
-                  :class="i <= product.rating ? 'fas fa-star' : 'far fa-star'"
-                ></i>
-              </div>
-              <span class="rating-count">({{ product.ratingCount }})</span>
-            </div>
-            <div v-if="product.colorOptions.length" class="color-options">
-              <span
-                v-for="(color, cidx) in product.colorOptions"
-                :key="color + cidx"
-                :class="['color-dot', color, cidx === 0 ? 'active' : '']"
-              ></span>
-            </div>
-          </div>
-        </div> -->
+      </div>
+      <!-- No Products State -->
+      <div v-else class="no-products">
+        <p>No products available in Explore.</p>
       </div>
       <div class="view-all-container">
         <button class="view-all-btn">View All Products</button>
@@ -70,98 +42,43 @@
 
 <script setup>
 import ProductCard from "./ProductCard.vue";
-// Import images
-import dogFoodImg from "/src/assets/images/dog food.png";
-import canonCameraImg from "/src/assets/images/canon camera.png";
-import gamingLaptopImg from "/src/assets/images/Gaming laptop.png";
-import curologyImg from "/src/assets/images/curology-j7pKVQrTUsM-unsplash 1.png";
-import kidsCarImg from "/src/assets/images/Kids car.png";
-import soccerCleatsImg from "/src/assets/images/soccer cleats.png";
-import usbGamepadImg from "/src/assets/images/USB Gamepad.png";
-import satinJacketImg from "/src/assets/images/Satin jacket.png";
+import apiService from "../services/api.js";
+import { ref, onMounted } from "vue";
 
-const products = [
-  {
-    id:13,
-    name: "Breed Dry Dog Food",
-    image: dogFoodImg,
-    price: 100,
-    rating: 3,
-    ratingCount: 35,
-    isNew: false,
-    colors: [],
-  },
-  {
-    id: 14,
-    name: "CANON EOS DSLR Camera",
-    image: canonCameraImg,
-    price: 360,
-    rating: 4,
-    ratingCount: 95,
-    isNew: false,
-    colors: [],
-  },
-  {
-    id: 15,
-    name: "ASUS FHD Gaming Laptop",
-    image: gamingLaptopImg,
-    price: 700,
-    rating: 5,
-    ratingCount: 325,
-    isNew: false,
-    colors: [],
-  },
-  {
-    id: 16,
-    name: "Curology Product Set",
-    image: curologyImg,
-    price: 500,
-    rating: 4,
-    ratingCount: 145,
-    isNew: false,
-    colors: [],
-  },
-  {
-    id: 17,
-    name: "Kids Electric Car",
-    image: kidsCarImg,
-    price: 960,
-    rating: 5,
-    ratingCount: 65,
-    isNew: true,
-    colors: ["red", "blue"],
-  },
-  {
-    id: 18,
-    name: "Jr. Zoom Soccer Cleats",
-    image: soccerCleatsImg,
-    price: 1160,
-    rating: 5,
-    ratingCount: 35,
-    isNew: false,
-    colors: ["yellow", "red"],
-  },
-  {
-    id: 19,
-    name: "GP11 Shooter USB Gamepad",
-    image: usbGamepadImg,
-    price: 660,
-    rating: 5,
-    ratingCount: 55,
-    isNew: true,
-    colors: ["black", "red"],
-  },
-  {
-    id: 20,
-    name: "Quilted Satin Jacket",
-    image: satinJacketImg,
-    price: 660,
-    rating: 5,
-    ratingCount: 55,
-    isNew: false,
-    colors: ["green", "red"],
-  },
-];
+const products = ref([]);
+const loading = ref(true);
+const error = ref(null);
+
+// Fetch products from API
+const fetchProducts = async () => {
+  try {
+    loading.value = true;
+    error.value = null;
+
+    //Get Explore Products 
+
+    const data = await apiService.getExploreProducts();
+    products.value = data;
+
+    // Debug: Log the first product to check image URL format
+    if (data.length > 0) {
+      console.log("First product image URL:", data[0].image);
+      console.log("Full first product:", data[0]);
+    }
+
+    console.log("Explore Products successfully loaded: ", data.length);
+  } catch (err) {
+    error.value = err.message;
+    console.error("Error fetching Explore products: ", err);
+  } finally {
+    loading.value = false;
+  }
+};
+onMounted(() =>{
+  fetchProducts();
+})
+
+
 </script>
 
 <style scoped>

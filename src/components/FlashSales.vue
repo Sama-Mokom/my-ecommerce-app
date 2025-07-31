@@ -261,6 +261,7 @@ const startCountdown = () => {
   }, 1000);
 };
 onMounted(() => {
+  //Start the timer countdown and render flashsale products when page is loaded
   startCountdown();
   fetchProducts();
 });
