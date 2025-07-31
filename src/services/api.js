@@ -35,26 +35,34 @@ class ApiService {
     return this.fetchWithErrorHandling(`${API_BASE_URL}/getProducts`);
   }
 
-  //Get products by category
+  //Get products by category will be used later on when implementing various product categories
   async getProductsByCategory(category) {
     return this.fetchWithErrorHandling(
       `${API_BASE_URL}/getProducts/${category}`
     );
   }
 
+
+   //Get products by section
+  async getProductsBySection(section) {
+    return this.fetchWithErrorHandling(
+      `${API_BASE_URL}/getProducts/${section}`
+    );
+  }
+
   // Get flash sale products
   async getFlashSaleProducts() {
-    return this.getProductsByCategory("flash-sales");
+    return this.getProductsBySection("flash-sales");
   }
 
   // Get best selling products
   async getBestSellingProducts() {
-    return this.getProductsByCategory("best-selling");
+    return this.getProductsBySection("best-selling");
   }
 
   // Get explore products
   async getExploreProducts() {
-    return this.getProductsByCategory("explore");
+    return this.getProductsBySection("explore");
   }
 
   async postProduct(productData, imageFile) {

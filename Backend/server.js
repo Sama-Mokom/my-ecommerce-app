@@ -7,7 +7,6 @@ import fs from "fs";
 import cors from "cors";
 import { v4 as uuidv4 } from 'uuid';
 
-const id = uuidv4();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -90,10 +89,6 @@ app.post("/postProduct", upload.single('image'), (req, res) => {
       return res.status(400).json({error: "originalPrice must be a valid number"})
     }
   }
-  // let color = req.body.colors;
-  // if (color === ''){
-  //   color = null;
-  // }
   try{
  const id = uuidv4();
  const {
@@ -103,6 +98,7 @@ app.post("/postProduct", upload.single('image'), (req, res) => {
     rating,
     ratingCount,
     category,
+    section,
     isNew,
     colors
   } = req.body;
@@ -116,11 +112,11 @@ app.post("/postProduct", upload.single('image'), (req, res) => {
     const imageUrl = `/uploads/products/${req.file.filename}`;
 
     const insert_query =
-    'INSERT INTO products (id,name,image,discount,price,"originalPrice",rating,"ratingCount",category,"isNew",colors) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
+    'INSERT INTO products (id,name,image,discount,price,"originalPrice",rating,"ratingCount",category,section,"isNew",colors) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)';
 
      server_connect.query(
     insert_query,
-    [id, name, imageUrl, discount, price, numericPrice, rating, ratingCount,category,isNew,[colors]],
+    [id, name, imageUrl, discount, price, numericPrice, rating, ratingCount,category,section,isNew,[colors]],
     (err, result) => {
       if (err) {
         console.log("Database error:", err);
@@ -164,34 +160,34 @@ app.get("/getProducts", (req, res) => {
   });
 });
 
-// Endpoint to get products by category will have to add a category field to products table and to products e.g FlashSales, BestSelling, ExploreProducts...
-app.get("/getProducts/:category", (req, res) => {
-  const category = req.params.category;
+// Endpoint to get products by section e.g FlashSales, BestSelling, ExploreProducts...
+app.get("/getProducts/:section", (req, res) => {
+  const section = req.params.section;
   let query;
-  let params = [];
+  let params = [section];
 
-  switch(category) {
+  switch(section) {
     case 'flash-sales':
       // Assuming you add a category column or use discount to identify flash sales
-      query = 'SELECT * FROM products WHERE category = flash-sales ORDER BY id';
+      query = 'SELECT * FROM products WHERE section = $1 ORDER BY id';
       break;
     case 'best-selling':
       // You might want to add a 'category' or 'is_best_selling' column
       // For now, let's use rating as criteria
-      query = 'SELECT * FROM products WHERE rating >= 4 ORDER BY rating DESC, "ratingCount" DESC LIMIT 4';
+      query = 'SELECT * FROM products WHERE section = $1 ORDER BY id';
       break;
     case 'explore':
-      query = 'SELECT * FROM products ORDER BY id';
+      query = 'SELECT * FROM products WHERE section = $1 ORDER BY id';
       break;
     default:
-      return res.status(400).json({ error: "Invalid category" });
+      return res.status(400).json({ error: "Invalid section specified" });
   }
 
   server_connect.query(query, params, (err, result) => {
     if (err) {
-      console.error(`Error retrieving ${category} products`, err);
+      console.error(`Error retrieving ${section} products`, err);
       res.status(500).json({ 
-        message: `Failed to retrieve ${category} products`, 
+        message: `Failed to retrieve ${section} products`, 
         error: err.message 
       });
     } else {
@@ -200,6 +196,7 @@ app.get("/getProducts/:category", (req, res) => {
         image: `http://localhost:8080${product.image}`
       }));
       
+      console.log(`Successfully retrieved ${productsWithFullUrls.length} ${section} products. `)
       res.status(200).json(productsWithFullUrls);
     }
   });

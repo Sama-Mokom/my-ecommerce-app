@@ -53,6 +53,7 @@ const setupProject = async () => {
           rating DECIMAL(3,1),
           "ratingCount" INTEGER,
           category VARCHAR(255),
+          section VARCHAR(255),
           "isNew" BOOLEAN,
           colors TEXT[]
         );
@@ -73,18 +74,18 @@ const setupProject = async () => {
       // Add all other products here...
     ];
 
-    const insertQuery = `
-      INSERT INTO products (id, name, image, discount, price, "originalPrice", rating, "ratingCount") 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      ON CONFLICT (id) DO UPDATE SET
-        name = EXCLUDED.name,
-        image = EXCLUDED.image,
-        discount = EXCLUDED.discount,
-        price = EXCLUDED.price,
-        "originalPrice" = EXCLUDED."originalPrice",
-        rating = EXCLUDED.rating,
-        "ratingCount" = EXCLUDED."ratingCount"
-    `;
+    // const insertQuery = `
+    //   INSERT INTO products (id, name, image, discount, price, "originalPrice", rating, "ratingCount") 
+    //   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    //   ON CONFLICT (id) DO UPDATE SET
+    //     name = EXCLUDED.name,
+    //     image = EXCLUDED.image,
+    //     discount = EXCLUDED.discount,
+    //     price = EXCLUDED.price,
+    //     "originalPrice" = EXCLUDED."originalPrice",
+    //     rating = EXCLUDED.rating,
+    //     "ratingCount" = EXCLUDED."ratingCount"
+    // `;
 
     for (const product of products) {
       await client.query(insertQuery, [
