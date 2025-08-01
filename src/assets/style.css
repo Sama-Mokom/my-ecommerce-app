@@ -109,10 +109,10 @@ body {
   width: 200px;
 }
 
-/* .search-box input:focus{
-    /* outline: 2px solid #db4444; */
-    /* outline-offset: 2px;
-} */ 
+ .search-box input:focus{
+     outline: 2px solid transparent; 
+     outline-offset: 2px;
+} 
 
 .search-box i {
   color: #000;
@@ -567,17 +567,26 @@ body {
 }
 
 .color-dot {
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   cursor: pointer;
   border: 2px solid transparent;
 }
+/* .color-dot-background{
+  display: flex;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  border: 1px solid white;
+  background-color: #000;
+} */
 
 .color-dot.active {
   border-color: #000;
 }
 
+/* Styling for color options of products */
 .color-dot.red {
   background: #fb1314;
 }
@@ -591,7 +600,10 @@ body {
   background: #000;
 }
 .color-dot.green {
-  background: #184a48;
+  background: #166b2a;
+}
+.color-dot.brown {
+  background: #7f4d03;
 }
 
 /* View All Button */

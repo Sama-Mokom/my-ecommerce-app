@@ -44,8 +44,8 @@ const props = defineProps({
 .logo{
   margin-left: 60px;
 }
-input:focus, a:focus {
-    /* outline: 2px solid #db4444; */
+ /* a:focus {
+    outline: 2px solid #db4444;
     outline-offset: 2px;
-}
+} */
 </style>
