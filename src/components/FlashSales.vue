@@ -85,6 +85,7 @@
           View All Products
         </button>
       </div>
+      <hr style="border-color: black;"> 
     </div>
   </section>
 </template>
@@ -262,7 +263,7 @@ const startCountdown = () => {
 };
 onMounted(() => {
   //Start the timer countdown and render flashsale products when page is loaded
-  startCountdown();
+  // startCountdown();
   fetchProducts();
 });
 
@@ -273,7 +274,14 @@ onUnmounted(() => {
 });
 </script>
 <style scoped>
+
+.flash-sales {
+    margin-bottom: 100px;
+    margin-top: 130px;
+}
+
 .container {
+  margin-right: 50px;
   margin-left: 90px;
   max-width: 1200px;
   /* margin: 90px; */
@@ -314,5 +322,13 @@ onUnmounted(() => {
   gap: 17px;
   margin-left: 8px;
   margin-right: 390px;
+}
+
+.view-all-container {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
 }
 </style>

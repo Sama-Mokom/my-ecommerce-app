@@ -82,6 +82,10 @@ onMounted(() =>{
 </script>
 
 <style scoped>
+
+/* .explore-products {
+  margin: 70px 0;
+} */
 .explore-products {
   background: #fff;
   border-radius: 10px;

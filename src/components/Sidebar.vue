@@ -35,4 +35,32 @@ const props = defineProps({
     border-right: 1px solid #e5e5e5;
     padding-right: 16px;
 }
+
+/* Sidebar */
+.sidebar {
+  border-right: 1px solid #e5e5e5;
+  padding-right: 16px;
+}
+
+.category-list {
+  list-style: none;
+}
+
+.category-list li {
+  margin-bottom: 16px;
+}
+
+.category-list a {
+  text-decoration: none;
+  color: #000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+}
+
+.category-list a:hover {
+  color: #db4444;
+}
+
 </style>

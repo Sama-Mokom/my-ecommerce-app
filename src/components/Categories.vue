@@ -42,12 +42,22 @@ const categories = [
 </script>
 
 <style scoped>
+
+.categories {
+  margin-top: 40px;
+    margin-bottom: 80px;
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 70px;
+}
+
+
 .section-header {
+  margin-left: 70px;
   display: inline-block;
   align-items: flex-end;
   justify-content: space-between;
   margin-bottom: 0px;
-  padding-left: 42px;
+  /* padding-left: 42px; */
 }
 
 .section-title {
@@ -58,7 +68,7 @@ const categories = [
 }
 
 .nav-arrows {
-  margin-left: 690px;
+  margin-left: 660px;
   display: flex;
   gap: 8px;
 }
@@ -71,9 +81,28 @@ const categories = [
 }
 
 .categories-grid {
+  margin-left: 30px;
+  margin-right: 20px;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 30px;
   padding-left: 42px;
 }
+
+.category-card {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  padding: 25px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+
+
+
 </style>

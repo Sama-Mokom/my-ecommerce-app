@@ -100,7 +100,7 @@ const startCountdown = () => {
   }, 1000);
 };
 onMounted(() => {
-  startCountdown();
+  // startCountdown();
 });
 
 onUnmounted(() => {
@@ -238,7 +238,7 @@ onUnmounted(() => {
     #000
   );
   width: 700px;
-  height: 400px;
+  height: 502px;
 }
 
 @media (max-width: 900px) {
@@ -260,6 +260,11 @@ onUnmounted(() => {
   .music-banner__image {
     max-width: 100%;
   }
+}
+
+button:focus, input:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
 }
 
 /* .music-banner {

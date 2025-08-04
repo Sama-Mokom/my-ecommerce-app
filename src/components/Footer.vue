@@ -85,148 +85,138 @@ const appLinks = ref([
   {
     img: "/src/assets/images/download-appstore.png",
     alt: 'Google Play',
-    href: 'https://play.google.com/store',
+    href: 'https://www.apple.com/app-store/',
   },
   {
     img: "/src/assets/images/png-transparent-google-play-store-logo-google-play-app-store-android-wallets-text-label-logo.png",
     alt: 'App Store',
-    href: 'https://www.apple.com/app-store/',
+    href: 'https://play.google.com/store',
   },
 ]);
 </script>
 
 <style scoped>
-/* .footer {
+
+
+/* Footer */
+.footer {
   background: #000;
   color: #fff;
-  padding-top: 40px;
-  position: relative;
+  padding: 80px 0 24px;
 }
+
 .footer-content {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 40px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 50px;
+  margin-bottom: 60px;
 }
-.footer-column {
-  flex: 1 1 180px;
-  min-width: 180px;
-  margin-bottom: 30px;
-}
+
 .footer-column h3 {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 18px;
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 24px;
 }
+
 .footer-column h4 {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 24px;
 }
+
 .footer-column p {
-  font-size: 16px;
-  margin-bottom: 12px;
+  font-weight: 500;
+  font-size: 12px;
+  margin-bottom: 8px;
+  opacity: 0.7;
 }
+
 .footer-column ul {
   list-style: none;
-  padding: 0;
 }
+
 .footer-column ul li {
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
+
 .footer-column ul li a {
   color: #fff;
   text-decoration: none;
-  font-size: 16px;
-  transition: color 0.2s;
+  opacity: 0.7;
 }
+
 .footer-column ul li a:hover {
-  color: #db4444;
+  opacity: 1;
+}
+.app-row {
+  display: inline;
 }
 .newsletter {
   display: flex;
-  align-items: center;
-  border: 1px solid #fff;
-  border-radius: 5px;
+  border: 1.5px solid #fff;
+  border-radius: 4px;
   overflow: hidden;
-  margin-top: 10px;
 }
+
 .newsletter input {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  outline: none;
+}
+
+.newsletter input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.newsletter button {
   background: transparent;
   border: none;
   color: #fff;
-  padding: 10px;
-  flex: 1;
-  font-size: 16px;
-  outline: none;
-}
-.newsletter input::placeholder {
-  color: #ccc;
-}
-.newsletter button {
-  background: none;
-  border: none;
-  color: #fff;
-  padding: 0 16px;
+  padding: 12px 16px;
   cursor: pointer;
-  font-size: 18px;
 }
-.app-downloads .app-row {
+
+.app-downloads {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 12px 0;
+  gap: 8px;
+  margin-bottom: 24px;
 }
+
 .qr-code img {
   width: 80px;
   height: 80px;
-  object-fit: contain;
-  background: #fff;
-  border-radius: 8px;
 }
+
 .app-links {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
+
 .app-links img {
-  width: 120px;
-  height: 36px;
-  object-fit: contain;
-  background: #fff;
-  border-radius: 6px;
+  width: 110px;
+  height: 40px;
 }
+
 .social-links {
   display: flex;
-  gap: 16px;
-  margin-top: 18px;
+  gap: 24px;
 }
+
 .social-links a {
   color: #fff;
-  font-size: 22px;
-  transition: color 0.2s;
+  font-size: 24px;
 }
-.social-links a:hover {
-  color: #db4444;
-}
+
 .footer-bottom {
-  background: #111;
-  padding: 18px 0 10px 0;
-  margin-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 16px;
   text-align: center;
+  opacity: 0.6;
 }
-.footer-bottom p {
-  color: #fff;
-  font-size: 15px;
-  margin: 0;
-}
-@media (max-width: 1024px) {
-  .footer-content {
-    flex-direction: column;
-    gap: 0;
-  }
-  .footer-column {
-    margin-bottom: 24px;
-  }
-} */
+
+
 </style>

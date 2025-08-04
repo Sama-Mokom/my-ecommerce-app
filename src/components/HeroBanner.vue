@@ -104,3 +104,89 @@ const goToSlide = (index) =>{
   }
 }
 </script>
+
+<style scoped>
+/* Hero Banner */
+.hero-banner {
+  margin-right: 40px;
+  background: #000;
+  padding: 58px 64px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hero-text {
+  flex: 1;
+}
+
+.brand-info {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.brand-info i {
+  font-size: 40px;
+}
+
+.brand-info span {
+  font-size: 16px;
+}
+
+.hero-banner h1 {
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 60px;
+  margin-bottom: 22px;
+}
+
+.shop-now-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  text-decoration: none;
+  border-bottom: 1px solid #fff;
+  padding-bottom: 4px;
+}
+
+.hero-image {
+  flex: 1;
+  text-align: center;
+}
+
+.hero-image img {
+  max-width: 100%;
+  height: auto;
+}
+
+.hero-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.dot.active {
+  background: #db4444;
+  border: 2px solid #fff;
+}
+</style>

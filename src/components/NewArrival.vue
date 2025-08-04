@@ -180,6 +180,9 @@ const perfume = computed(() => arrivals.filter((a) => a.type === "perfume"));
   padding-left: 0;
   box-sizing: border-box;
 }
+.new-arrival {
+  margin: 140px 0;
+}
 
 body {
   font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -192,7 +195,6 @@ body {
   display: flex;
   align-items: flex-end;
   justify-content: left;
-  /* border-spacing: revert; */
   margin-bottom: 20px;
 }
 
@@ -251,6 +253,15 @@ body {
   flex: 1;
 }
 
+.arrival-content {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  color: #fff;
+}
+
+
 .arrival-content img {
   position: absolute;
   top: 0;
@@ -260,29 +271,7 @@ body {
   object-fit: cover;
 }
 
-/* .arrival-content.large img #play-station {
-  transform: translate(-50%, -50%);
-  margin: auto;
-  max-height: 100%;
-  max-width: 100%;
-  display: block;
-  width: 201px;
-  height: 203px;
-  object-fit: cover;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-} */
 
-/* .arrival-content[data-v-46d46e45] {
-  overflow: hidden;
-  width: 270px;
-  position: relative;
-  height: 284px;
-  display: flex;
-  align-items: flex-end;
-  color: #fff;
-} */
 .arrival-content[data-v-46d46e45][data-v-46d46e45] {
   overflow: hidden;
   position: relative;
@@ -292,26 +281,22 @@ body {
   color: #fff;
 }
 
-/* .arrival-content#echo {
-  width: 190px;
-  height: 221px;
-  left: 10px;
-} */
-
-/* .arrival-content
+.arrival-content#PS5 {
+  width: 511px;
+  height: 511px;
+  top: 89px;
+  left: 29px;
+}
+/* Ensure generic .arrival-content img does not override the above */
+.arrival-content
   img:not(#PS5):not(#womens-collections):not(#echo):not(#perfume) {
-  transform: translate(-50%, -50%);
-  margin: auto;
-  max-height: 100%;
-  max-width: 100%;
-  display: block;
-  width: 201px;
-  height: 203px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   position: absolute;
-  top: 50%;
-  left: 50%;
-} */
+  top: 0;
+  left: 0;
+}
 
 .arrival-text {
   position: relative;
