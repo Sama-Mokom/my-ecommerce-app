@@ -101,6 +101,28 @@ class ApiService {
 
   async postUser (userData) {
     try {
+      if (userData.name === ''){
+        alert("Please input your name")
+        return;
+      }
+      if(userData.email===''){
+        alert("Please input your email address")
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if(!emailRegex.test(userData.email)){
+        alert("Please input a valid email")
+        return;
+      }
+      if(userData.password === ''){
+        alert('Please input your password to signup')
+        return;
+      }
+      if (userData.password.length < 8) {
+        alert("Password must be atleast 8 characters long")
+        return;
+    }
+
       //  console.log('Frontend Information to help with debugging')
       //  console.log('Form data before submit: ', formData.value);
       //  console.log('JSON stringify result: ', JSON.stringify(formData.value));
@@ -134,7 +156,7 @@ class ApiService {
       return await response.json();
     }catch (error){
         console.error('Network or API error:', error)
-        alert('Network error. Please try again. ')
+        alert('Network error. Please try again. ') 
     }
 }
 

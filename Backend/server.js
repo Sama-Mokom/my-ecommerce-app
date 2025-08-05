@@ -242,19 +242,6 @@ app.post("/postUser", async (req, res) => {
         }
     });
     }
-     //validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({
-        error: "Invalid email format",
-      });
-    }
-     //Validate password length
-    if (password.length < 8) {
-      return res.status(400).json({
-        error: "Password must be at least 8 characters long",
-      });
-    }
 
     // Check if user already exists
     const checkUserQuery = "SELECT id FROM users WHERE email = $1";
