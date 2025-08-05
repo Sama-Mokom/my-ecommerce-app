@@ -60,7 +60,7 @@
     </div>
     <div class="footer-bottom">
       <div class="container">
-        <p>© Copyright Rimel 2022. All right reserved</p>
+        <p>© Copyright Rimel 2025. All right reserved</p>
       </div>
     </div>
   </footer>

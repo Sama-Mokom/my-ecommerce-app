@@ -1,20 +1,9 @@
-import { migrateImages } from './migrateImages.js';
+// import { migrateImages } from './migrateImages.js';
 import { Client } from "pg";
 
 const setupProject = async () => {
   console.log('🚀 Starting project setup...\n');
 
-  // Step 1: Migrate Images
-  // console.log('📁 Step 1: Migrating images...');
-  // try {
-  //   migrateImages();
-  //   console.log('✅ Image migration completed\n');
-  // } catch (error) {
-  //   console.error('❌ Image migration failed:', error);
-  //   return;
-  // }
-
-  // Step 2: Update Database
   console.log('🗄️  Step 1: Updating database...');
   
   const client = new Client({
@@ -30,7 +19,7 @@ const setupProject = async () => {
     console.log("✓ Connected to database");
 
     // Check if products table exists and create if not
-    const tableExistsQuery = `
+    const productsTableExistsQuery = `
       SELECT EXISTS (
         SELECT FROM information_schema.tables 
         WHERE table_schema = 'public' 
@@ -38,11 +27,11 @@ const setupProject = async () => {
       );
     `;
     
-    const tableExists = await client.query(tableExistsQuery);
+    const productsTableExists = await client.query(productsTableExistsQuery);
     
-    if (!tableExists.rows[0].exists) {
+    if (!productsTableExists.rows[0].exists) {
       console.log("Creating products table...");
-      const createTableQuery = `
+      const createProductsTableQuery = `
         CREATE TABLE products (
           id TEXT PRIMARY KEY,
           name VARCHAR(255) NOT NULL,
@@ -58,8 +47,37 @@ const setupProject = async () => {
           colors TEXT[]
         );
       `;
-      await client.query(createTableQuery);
+      await client.query(createProductsTableQuery);
       console.log("✓ Products table created");
+    }
+
+
+    // Check if users table exists and create if not
+    const usersTableExistsQuery = `
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'users'
+      );
+    `;
+    
+    const usersTableExists = await client.query(usersTableExistsQuery);
+    
+    if (!usersTableExists.rows[0].exists) {
+      console.log("Creating users table...");
+      const createUsersTableQuery = `
+        CREATE TABLE users (
+          id TEXT PRIMARY KEY,
+          name VARCHAR(255) NOT NULL,
+          email VARCHAR(255) NOT NULL,
+          phone VARCHAR(255),
+          password TEXT NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+      `;
+      await client.query(createUsersTableQuery);
+      console.log("✓ Users table created");
     }
 
     // Clear existing data if requested
@@ -67,43 +85,13 @@ const setupProject = async () => {
     if (shouldClearData) {
       await client.query('DELETE FROM products');
       console.log("✓ Cleared existing products");
+      await client.query('DELETE FROM users');
+      console.log("✓ Cleared existing users");
     }
-
-    // Insert sample data (same as updateDatabase.js)
-    const products = [
-      // Add all other products here...
-    ];
-
-    // const insertQuery = `
-    //   INSERT INTO products (id, name, image, discount, price, "originalPrice", rating, "ratingCount") 
-    //   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-    //   ON CONFLICT (id) DO UPDATE SET
-    //     name = EXCLUDED.name,
-    //     image = EXCLUDED.image,
-    //     discount = EXCLUDED.discount,
-    //     price = EXCLUDED.price,
-    //     "originalPrice" = EXCLUDED."originalPrice",
-    //     rating = EXCLUDED.rating,
-    //     "ratingCount" = EXCLUDED."ratingCount"
-    // `;
-
-    for (const product of products) {
-      await client.query(insertQuery, [
-        product.id,
-        product.name,
-        product.image,
-        product.discount,
-        product.price,
-        product.originalPrice,
-        product.rating,
-        product.ratingCount,
-      ]);
-    }
-
-    console.log(`✅ Database updated with ${products.length} products\n`);
 
   } catch (error) {
     console.error("❌ Database setup failed:", error);
+    return;
   } finally {
     await client.end();
   }

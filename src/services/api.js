@@ -1,6 +1,7 @@
 const API_BASE_URL = "http://localhost:8080";
 
 class ApiService {
+
   async fetchWithErrorHandling(url, options = {}) {
     try {
       const response = await fetch(url, {
@@ -97,6 +98,47 @@ class ApiService {
       throw error;
     }
   }
+
+  async postUser (userData) {
+    try {
+      //  console.log('Frontend Information to help with debugging')
+      //  console.log('Form data before submit: ', formData.value);
+      //  console.log('JSON stringify result: ', JSON.stringify(formData.value));
+      //  console.log('========================');
+
+       const response = await fetch(`${API_BASE_URL}/postUser`, {
+        method: 'POST',
+        headers:{
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData)
+       })
+      //  console.log('Response status: ', response.status)
+      //  console.log('Response headers: ', response.headers)
+
+      //  const data = await response.json()
+      //  console.log('Response data: ', data)
+
+      //  if (response.ok){
+      //   console.log('User created sucessfully: ', data)
+      //   alert('Account created successfully')
+      //   formData.value = {name: '', email: '', password: ''}
+      //  }else {
+      //    console.error('Signup failed:', data)
+      // alert(`Signup failed: ${data.error}`)
+      //  }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() =>({message: "Unknown error"}));
+        throw new Error(errorData.error|| `HTTP error! status: ${response.status}`)
+      }
+      return await response.json();
+    }catch (error){
+        console.error('Network or API error:', error)
+        alert('Network error. Please try again. ')
+    }
+}
+
+  
 }
 
 const apiService = new ApiService();
@@ -109,4 +151,5 @@ export const {
   getBestSellingProducts,
   getExploreProducts,
   postProduct,
+  postUser,
 } = apiService;

@@ -73,10 +73,10 @@ const props = defineProps({
   navLinks: {
     type: Array,
     default: () => [
-      { text: "Home", href: "#", active: true },
+      { text: "Home", href: "http://localhost:5173/", active: true },
       { text: "Contact", href: "#" },
       { text: "About", href: "#" },
-      { text: "Sign Up", href: "#" },
+      { text: "Sign Up", href: "http://localhost:5173/signup" },
     ],
   },
   searchIcon: { type: String, default: "/images/search icon.png" },
@@ -279,7 +279,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  color: white;
+  color: gainsboro;
   cursor: pointer;
   transition: all 0.2s ease;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
