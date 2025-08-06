@@ -83,8 +83,8 @@
 
             <p class="login-link">
               Already have account?
-              <a href="#" @click.prevent="goToLogin" class="login-link-text"
-                >Log in</a
+              <RouterLink to="SignIn" class="login-link-text"
+                >Log in</RouterLink
               >
             </p>
           </form>
@@ -97,7 +97,7 @@
 <script setup>
 import { ref } from "vue";
 import apiService from "../services/api";
-import { useRouter } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
 // import axios from "axios";
 
 const router = useRouter()

@@ -59,8 +59,8 @@
             </div>
           </div>
           <!-- <i class="far fa-user"></i> -->
-          <i class="far fa-heart"></i>
-          <i class="fas fa-shopping-cart"></i>
+          <i class="far fa-heart heart-icon"></i>
+          <i class="fas fa-shopping-cart cart-icon"></i>
         </div>
       </div>
     </div>
@@ -227,8 +227,12 @@ onUnmounted(() => {
 
 
 .header-icons i {
-  font-size: 20px;
-  cursor: pointer;
+    padding-top: 7px;
+    position: relative;
+    height: 36px;
+    width: 33.5px;
+    font-size: 20px;
+    cursor: pointer;
 }
 
  .header-icons {
@@ -249,11 +253,12 @@ onUnmounted(() => {
   border-radius: 4px;
 }
 
-.user-icon:hover,
+.user-icon:hover,.heart-icon:hover, .cart-icon:hover,
 .user-icon.active {
   background-color: #f5f5f5;
   color: #db4444;
 }
+
 
 .dropdown-menu {
   position: absolute;
@@ -283,6 +288,7 @@ onUnmounted(() => {
 }
 
 .dropdown-item {
+  max-height: 45px;
   display: flex;
   align-items: center;
   gap: 12px;

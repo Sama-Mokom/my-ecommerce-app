@@ -57,12 +57,12 @@
               </button>
             </div>
 
-            <!-- <p class="login-link">
-              Already have account?
-              <a href="#" @click.prevent="goToSignUp" class="login-link-text"
-                >Sign Up</a
+            <p class="login-link">
+              Don't have an account?
+              <RouterLink to="SignUp"  class="login-link-text"
+                >Sign Up</RouterLink
               >
-            </p> -->
+            </p>
           </form>
         </div>
       </div>
@@ -73,7 +73,7 @@
 <script setup>
 import { ref } from "vue";
 import apiService from "../services/api";
-import { useRouter } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
 
 const router = useRouter();
 
