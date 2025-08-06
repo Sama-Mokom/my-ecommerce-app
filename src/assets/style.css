@@ -863,11 +863,11 @@ body {
 }
 
 /* Focus States for Accessibility */
-button:focus,
+/* button:focus,
 input:focus {
   outline: 2px solid #db4444;
   outline-offset: 2px;
-}
+} */
 
 /* Print Styles */
 @media print {

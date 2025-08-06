@@ -118,7 +118,7 @@ onUnmounted(() => {
   /* padding: 0 20px; */
 }
 .music-banner {
-  margin-left: 65px;
+  margin-left: 95px;
   margin-bottom: 20px;
   width: 90vw;
   background: #000;
@@ -237,7 +237,7 @@ onUnmounted(() => {
     #000,
     #000
   );
-  width: 700px;
+  width: 698px;
   height: 502px;
 }
 

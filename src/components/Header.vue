@@ -5,13 +5,13 @@
         <h2>Exclusive</h2>
       </div>
       <nav class="nav">
-        <a
+        <router-link
           v-for="(link, i) in navLinks"
           :key="i"
-          :href="link.href"
+          :to="link.to"
           class="nav-link"
           :class="{ active: link.active }"
-          >{{ link.text }}</a
+          >{{ link.text }}</router-link
         >
       </nav>
       <div class="header-actions">
@@ -69,14 +69,17 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 const props = defineProps({
   navLinks: {
     type: Array,
     default: () => [
-      { text: "Home", href: "http://localhost:5173/", active: true },
-      { text: "Contact", href: "#" },
-      { text: "About", href: "#" },
-      { text: "Sign Up", href: "http://localhost:5173/signup" },
+      { text: "Home", to: "/",},
+      { text: "Contact", to: "/contact" },
+      { text: "About", to: "/about" },
+      { text: "Sign Up", to: "/signup" },
     ],
   },
   searchIcon: { type: String, default: "/images/search icon.png" },
@@ -98,19 +101,24 @@ const handleMenuClick = (action) => {
   switch(action) {
     case 'account':
       // Navigate to account management
-      break
+      router.push('/account');
+      break;
     case 'orders':
       // Navigate to orders page
-      break
+      router.push('/orders');
+      break;
     case 'cancellations':
       // Navigate to cancellations page
-      break
+      router.push('/cancellations');
+      break;
     case 'reviews':
       // Navigate to reviews page
-      break
+      router.push('/reviews')
+      break;
     case 'logout':
-      // Handle logout
-      break
+      // Handle logout logic here, then redirect user to homepage
+      router.push('/');
+      break;
   }
 }
 
@@ -124,7 +132,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOtside)
+  document.removeEventListener('click', handleClickOutside)
 })
 
 </script>
@@ -171,14 +179,14 @@ onUnmounted(() => {
   color: #db4444;
 }
 
-.nav-link.active::after {
+.nav-link.router-link-active::after,.nav-link.router-link-exact-active::after {
   content: "";
   position: absolute;
   bottom: -4px;
   left: 0;
   width: 100%;
   height: 1px;
-  background: #000;
+  background: #db4444;
 }
 
 .header-actions {

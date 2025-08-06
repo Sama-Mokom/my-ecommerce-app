@@ -87,10 +87,14 @@ onMounted(() =>{
   margin: 70px 0;
 } */
 .explore-products {
-  background: #fff;
-  border-radius: 10px;
-  margin: 2rem 0;
-  padding: 2rem 0 3rem 0;
+    margin-right: 50px;
+    margin-left: 60px;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    background: #fff;
+    border-radius: 10px;
+    /* margin: 2rem 0; */
+    padding: 2rem 0 3rem 0;
 }
 .container {
   max-width: 1200px;
@@ -126,7 +130,7 @@ onMounted(() =>{
   margin: 0;
 }
 .nav-arrows {
-  margin-left: 200px;
+  margin-left: 151px;
   display: flex;
   gap: 0.5rem;
 }
