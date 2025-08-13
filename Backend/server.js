@@ -8,6 +8,15 @@ import cors from "cors";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 import { debug } from "console";
+import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+
+// JWT utilities and middleware imports
+import { generateTokens, verifyRefreshToken } from "./utils/jwt.js";
+import { authenticateToken, optionalAuth } from "./middleware/auth.js";
+
+// load enviroment variables
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,9 +31,11 @@ app.use(
       "http://127.0.0.1:5173",
     ],
     credentials: true,
+    optionsSuccessStatus: 200,
   })
 );
 
+app.use(cookieParser()); 
 app.use(express.json());
 
 //  Create a directory called uploads in the public folder
@@ -75,11 +86,11 @@ const upload = multer({
 });
 
 const server_connect = new Client({
-  host: "localhost",
-  user: "postgres",
-  port: 5432,
-  password: "Kaparaz",
-  database: "e-commerce",
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "postgres",
+  port: process.env.DB_PORT || 5432,
+  password: process.env.DB_PASSWORD || "Kaparaz",
+  database: process.env.DB_NAME || "e-commerce",
 });
 
 server_connect
@@ -176,71 +187,74 @@ app.post("/postProduct", upload.single("image"), (req, res) => {
 app.post("/postUser", async (req, res) => {
   try {
     console.log("=== POST /postUser Debug Info ===");
-    console.log("Request method:", req.method);
-    console.log("Content-Type:", req.headers["content-type"]);
     console.log("Request body: ", req.body);
-    console.log("Request body type:", typeof req.body);
-    console.log(
-      "Request body keys:",
-      req.body ? Object.keys(req.body) : "No keys"
-    );
-    console.log("Raw request body:", JSON.stringify(req.body));
-    console.log("=====================================");
 
- // Check if req.body exists at all
+    // Check if req.body exists at all
     if (!req.body) {
       console.log("ERROR: req.body is null or undefined");
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: "Request body is missing",
         debug: {
           body: req.body,
-          contentType: req.headers['content-type']
-        }
+          contentType: req.headers["content-type"],
+        },
       });
     }
 
-
-// Check if req.body is an empty object
-    if (typeof req.body === 'object' && Object.keys(req.body).length === 0) {
+    // Check if req.body is an empty object
+    if (typeof req.body === "object" && Object.keys(req.body).length === 0) {
       console.log("ERROR: req.body is an empty object");
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: "Request body is empty",
         debug: {
           body: req.body,
           keys: Object.keys(req.body),
-          contentType: req.headers['content-type']
-        }
+          contentType: req.headers["content-type"],
+        },
       });
     }
 
-
-    // if (!req.body || Object.keys(req.body).length === 0) {
-    //   return res.status(400).json({
-    //     error: "Requset body is empty or invalid",
-    //   });
-    // }
-    // const { name, email, password } = req.body;
     const name = req.body.name || null;
-    const email = req.body.email|| null;
+    const email = req.body.email || null;
     const password = req.body.password || null;
 
-    console.log("Values extracted from body: ", {name, email, password: password ? "***hidden***" : null});
-
+    console.log("Values extracted from body: ", {
+      name,
+      email,
+      password: password ? "***hidden***" : null,
+    });
 
     if (!name || !email || !password) {
-      return res.status(400).json({
-        error: "Missing fields",
-        required: ["name", "email", "password"],
-        recieved: { name: !!name, email: !!email, password: !!password },
-      },
-    debug, {
-        bodyKeys: Object.keys(req.body),
-        actualValues: {
-          name: req.body.name,
-          email: req.body.email,
-          password: req.body.password ? "***provided***": "missing"
+      return res.status(400).json(
+        {
+          error: "Missing required fields",
+          required: ["name", "email", "password"],
+          recieved: { name: !!name, email: !!email, password: !!password },
+        },
+        debug,
+        {
+          bodyKeys: Object.keys(req.body),
+          actualValues: {
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password ? "***provided***" : "missing",
+          },
         }
-    });
+      );
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        error: "Invalid email format",
+      });
+    }
+
+    // Validate password strength
+    if (password.length < 8) {
+      return res.status(400).json({
+        error: "Password must be at least 8 characters long",
+      });
     }
 
     // Check if user already exists
@@ -256,114 +270,236 @@ app.post("/postUser", async (req, res) => {
     //Hash Passwords before saving in database
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    const id = uuidv4();
+    const userId = uuidv4();
 
     const insert_query =
       "INSERT INTO users (id,name,email, password) VALUES ($1,$2,$3,$4)";
 
-    server_connect.query(
+    const result = await server_connect.query(
       insert_query,
-      [id, name, email, hashedPassword],
-      (err, result) => {
-        if (err) {
-          console.log("Database error:", err);
-          if (err.code === "23505") {
-            return res.status(409).json({
-              error: "User with this email already exists",
-            });
-          }
-          return res.status(500).json({
-            error: "Database error",
-            details: err.message,
-          });
-        } else {
-          console.log("User created successfully:", result);
-          res.status(201).json({
-            message: "User created successfully",
-            UserName: name,
-            userID: id,
-          });
-        }
-      }
+      [userId, name, email, hashedPassword]
     );
+    console.log("User created successfully: ", result);
+
+    // Generate JWT Tokens
+    const tokenPayload = { userId, email, name };
+    const { accessToken, refreshToken } = generateTokens(tokenPayload);
+
+    // Refresh tokens are set as HTTP-only cookies for better security
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    console.log("User created and authenticated successfully");
+
+    res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      accessToken: accessToken,
+      user: {
+        id: userId,
+        name: name,
+        email: email,
+      },
+    });
   } catch (error) {
-    console.error("Server error:", error);
-    res.status(500).json({ error: "Server error", details: error.message });
+    console.error("User registration error:", error);
+    if (error.code === "23505"){
+      return res.status(409).json({error: "User with this email already exists"});
+    }
+    return res.status(500).json({
+      error: "Server error",
+      details: error.message
+    })
   }
 });
 
-// Add a simple test endpoint
-app.post("/test", (req, res) => {
-  console.log("Test endpoint hit");
-  console.log("Body:", req.body);
-  res.json({ 
-    message: "Test successful", 
-    body: req.body,
-    contentType: req.headers['content-type']
-  });
+
+
+// Login endpoint
+app.post("/loginUser", async (req, res) => {
+  try {
+    console.log("=== POST /loginUser ===");
+    console.log("Login request body:", req.body);
+
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({
+        error: "Request body is empty or invalid",
+      });
+    }
+
+    const { email, password } = req.body;
+
+    // Validate required fields
+    if (!email || !password) {
+      return res.status(400).json({
+        error: "Missing required fields",
+        required: ["email", "password"],
+      });
+    }
+
+    // Find user by email
+    const findUserQuery = "SELECT * FROM users WHERE email = $1";
+    const userResult = await server_connect.query(findUserQuery, [email]);
+
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({
+        error: "Invalid email or password",
+      });
+    }
+
+    const user = userResult.rows[0];
+
+    // Compare passwords
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        error: "Invalid email or password",
+      });
+    }
+
+    // Generating JWT tokens
+    const tokenPayload = {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+    };
+    const { accessToken, refreshToken } = generateTokens(tokenPayload);
+
+    // Set the refresh token to be HTTP-only cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // token is set to expire in 7 days
+    });
+    console.log("User login successful");
+
+    res.status(200).json({
+      message: "Login successful",
+      accessToken,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({
+      error: "Server error",
+      details: error.message,
+    });
+  }
 });
 
+// Endpoint to refresh token
+app.post("/refresh-token", async (req, res) => {
+  try {
+    const { refreshToken } = req.cookies;
+    if (!refreshToken) {
+      return res.status(401).json({
+        error: "Refresh token not provided",
+      });
+    }
+    const decoded = verifyRefreshToken(refreshToken);
 
-//Login endpoint
-// app.post("/loginUser", async (req, res) => {
-//   try {
-//     console.log("Login request body:", req.body);
+    const findUserQuery = "SELECT * FROM users WHERE ID = $1";
+    const userResult = await server_connect.query(findUserQuery, [
+      decoded.userId,
+    ]);
+
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({
+        error: "User not found",
+      });
+    }
+    const user = userResult.rows[0];
+
+    // New tokens are generated uppon refresh
+    const tokenPayload = {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+    };
+
+    const { accessToken, refreshToken: newRefreshToken } =
+      generateTokens(tokenPayload);
+
+    // new refresh tokens are saved to cookies
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      message: "Token refreshed successfully",
+      accessToken,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Token refresh error: ", error);
+    res.status(401).json({
+      error: "Invalid refresh token",
+      details: error.message,
+    });
+  }
+});
+
+//Endpoint to Logout user
+app.post("/logout", authenticateToken, (req, res) => {
+  try {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.status(200).json({
+      message: "Logout successful",
+    });
+  } catch (error) {
+    console.log("Logout error: ", error);
+    res.status(500).json({
+      error: "Server error during logout",
+    });
+  }
+});
+
+// Get current user (protected route).Will use this when implementing user profile
+app.get("/me", authenticateToken, async (req, res) => {
+  try {
+    const findUserQuery = 'SELECT id, name, email, created_at FROM users WHERE id = $1';
+    const userResult = await server_connect.query(findUserQuery, [req.user.userId]);
     
-//     if (!req.body || Object.keys(req.body).length === 0) {
-//       return res.status(400).json({ 
-//         error: "Request body is empty or invalid" 
-//       });
-//     }
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ 
+        error: "User not found" 
+      });
+    }
 
-//     const { email, password } = req.body;
+    res.status(200).json({ 
+      user: userResult.rows[0] 
+    });
 
-//     // Validate required fields
-//     if (!email || !password) {
-//       return res.status(400).json({ 
-//         error: "Missing required fields", 
-//         required: ["email", "password"]
-//       });
-//     }
-
-//     // Find user by email
-//     const findUserQuery = 'SELECT * FROM users WHERE email = $1';
-//     const userResult = await server_connect.query(findUserQuery, [email]);
-    
-//     if (userResult.rows.length === 0) {
-//       return res.status(401).json({ 
-//         error: "Invalid email or password" 
-//       });
-//     }
-
-//     const user = userResult.rows[0];
-
-//     // Compare passwords
-//     const isPasswordValid = await bcrypt.compare(password, user.password);
-    
-//     if (!isPasswordValid) {
-//       return res.status(401).json({ 
-//         error: "Invalid email or password" 
-//       });
-//     }
-
-//     // Don't send password back to client
-//     const { password: _, ...userWithoutPassword } = user;
-
-//     res.status(200).json({ 
-//       message: "Login successful", 
-//       user: userWithoutPassword
-//     });
-
-//   } catch (error) {
-//     console.error("Login error:", error);
-//     res.status(500).json({ 
-//       error: "Server error", 
-//       details: error.message 
-//     });
-//   }
-// });
-
-
+  } catch (error) {
+    console.error("Get user error:", error);
+    res.status(500).json({ 
+      error: "Server error", 
+      details: error.message 
+    });
+  }
+});
 
 app.get("/getProducts", (req, res) => {
   const select_all_query = "SELECT * FROM products ORDER BY id";
@@ -395,12 +531,12 @@ app.get("/getProducts/:section", (req, res) => {
 
   switch (section) {
     case "flash-sales":
-      // Assuming you add a category column or use discount to identify flash sales
+      // Assuming you add a category column or use discount to identify flash sales will be implemented later on
       query = "SELECT * FROM products WHERE section = $1 ORDER BY id";
       break;
     case "best-selling":
       // You might want to add a 'category' or 'is_best_selling' column
-      // For now, let's use rating as criteria
+      // Will use rating as criteria later on 
       query = "SELECT * FROM products WHERE section = $1 ORDER BY id";
       break;
     case "explore":
@@ -431,6 +567,18 @@ app.get("/getProducts/:section", (req, res) => {
   });
 });
 
+//Test endpoint. Use this for debugging
+app.post("/test", (req, res) => {
+  console.log("Test endpoint hit");
+  console.log("Body:", req.body);
+  res.json({ 
+    message: "Test successful", 
+    body: req.body,
+    contentType: req.headers['content-type']
+  });
+});
+
+
 //Error handling Middleware
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
@@ -442,7 +590,8 @@ app.use((err, req, res, next) => {
   }
   res.status(500).json({ error: err.message });
 });
-const port = 8080;
+const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`Server is running at port ${port}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });

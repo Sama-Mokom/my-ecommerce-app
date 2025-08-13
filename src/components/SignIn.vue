@@ -46,7 +46,9 @@
               />
             </div>
             <div class="button-container">
-              <button type="submit" class="create-account-btn">Login</button>
+              <button
+              :disabled="authStore.isLoading || !isFormValid"
+               type="submit" class="create-account-btn">Login</button>
 
               <button
                 type="button"
@@ -71,29 +73,79 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import apiService from "../services/api";
+import { ref, computed, watch, onMounted } from "vue";
+// import apiService from "../services/api";
 import { RouterLink, useRouter } from "vue-router";
+import { authActions, authStore } from "../../stores/auth";
 
 const router = useRouter();
-
-const login = async () => {
-  //login logic will be put in here
-};
 
 const formData = ref({
   email: "",
   password: "",
 });
 
-// const signUpWithGoogle = () => {
-//     console.log("Sign up with Google clicked");
-// }
+const emailError = ref("");
+const passwordError = ref("");
+
+const isFormValid = computed(() => {
+  return formData.value.email.trim() !== '' && 
+         formData.value.password.trim() !== '' && 
+         !emailError.value &&
+         !passwordError.value;
+});
+
+// Watchers for real-time validation
+watch(() => formData.value.email, (newEmail) => {
+  if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+    emailError.value = 'Please enter a valid email address';
+  } else {
+    emailError.value = '';
+  }
+});
+
+watch(() => formData.value.password, (newPassword) => {
+  if (newPassword && newPassword.length < 8) {
+    passwordError.value = 'Password must be at least 8 characters long';
+  } else {
+    passwordError.value = '';
+  }
+});
+
+const login = async () => {
+  //login logic will be put in here
+  if (!isFormValid) {
+    return;
+  }
+
+    try{
+        authActions.clearError();
+        const response = await authActions.login(formData.value);
+        if (response){
+            console.log("Login sucessful, redirecting to homepage");
+            alert("Login sucessful. Redirecting to home page")
+            router.push({name: "HomeView"})
+        }
+    } catch (err){
+        console.error("Login error: ", err);
+        alert(`Login failed: ${err.message}`)
+    }
+};
+
+
+
+const signUpWithGoogle = () => {
+    console.log("Sign up with Google clicked");
+}
 
 const forgotPassword = () => {
   console.log("forgot password clicked");
   router.push("forgotpassword");
 };
+
+onMounted(() => {
+  authActions.clearError();
+});
 </script>
 
 <style scoped>

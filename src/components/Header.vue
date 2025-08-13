@@ -20,7 +20,11 @@
           <i class="fas fa-search"></i>
         </div>
         <div class="header-icons">
+          <!-- <i class="far fa-user"></i> -->
+          <i class="far fa-heart heart-icon"></i>
+          <i class="fas fa-shopping-cart cart-icon"></i>
           <div
+          v-if="isAuthenticated"
             class="user-dropdown-container"
             @click="toggleDropdown"
             ref="userDropdown"
@@ -58,9 +62,6 @@
               </div>
             </div>
           </div>
-          <!-- <i class="far fa-user"></i> -->
-          <i class="far fa-heart heart-icon"></i>
-          <i class="fas fa-shopping-cart cart-icon"></i>
         </div>
       </div>
     </div>
@@ -68,23 +69,28 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { authActions, authStore, isAuthenticated } from '../../stores/auth';
 
 const router = useRouter();
 const props = defineProps({
-  navLinks: {
-    type: Array,
-    default: () => [
-      { text: "Home", to: "/",},
-      { text: "Contact", to: "/contact" },
-      { text: "About", to: "/about" },
-      { text: "Sign Up", to: "/signup" },
-    ],
-  },
+
   searchIcon: { type: String, default: "/images/search icon.png" },
   cartIcon: { type: String, default: "/images/Cart1.png" },
 });
+ const navLinks = computed(() => {
+  const baseLinks = [
+    { text: "Home", to: "/" },
+    { text: "Contact", to: "/contact" },
+    { text: "About", to: "/about" },
+  ];
+  if (!isAuthenticated.value){
+    baseLinks.push({text: "Sign Up", to: "/signup"});
+  }
+  return baseLinks;
+ })
+
 
 const isDropdownOpen = ref(false);
 const userDropdown = ref(null);
@@ -93,7 +99,7 @@ const toggleDropdown = () =>{
   isDropdownOpen.value = !isDropdownOpen.value
 }
 
-const handleMenuClick = (action) => {
+const handleMenuClick = async (action) => {
   console.log(`${action} clicked`)
   isDropdownOpen.value = false;
 
@@ -117,7 +123,15 @@ const handleMenuClick = (action) => {
       break;
     case 'logout':
       // Handle logout logic here, then redirect user to homepage
-      router.push('/');
+      try{
+        await authActions.logout();
+        console.log('User logged out successfully')
+        alert('Logout Successful');
+        router.push('/');
+      } catch (error){
+        console.error('Logout failed: ', error)
+        alert('Logout failed. Please try again')
+      }
       break;
   }
 }
