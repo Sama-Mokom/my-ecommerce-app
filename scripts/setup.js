@@ -80,6 +80,34 @@ const setupProject = async () => {
       console.log("✓ Users table created");
     }
 
+    // Check if wishlist table exists and create if not
+    const wishlistTableExistsQuery = `
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'wishlist'
+      );
+    `;
+    
+    const wishlistTableExists = await client.query(wishlistTableExistsQuery);
+    
+    if (!wishlistTableExists.rows[0].exists) {
+      console.log("Creating wishlist table...");
+      const createWishlistTableQuery = `
+        CREATE TABLE wishlist (
+          id SERIAL PRIMARY KEY,
+          "userId" TEXT NOT NULL,
+          "productId" TEXT NOT NULL,
+          "dateAdded" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE("userId", "productId"),
+          FOREIGN KEY ("userId") REFERENCES users(id) ON DELETE CASCADE,
+          FOREIGN KEY ("productId") REFERENCES products(id) ON DELETE CASCADE
+        );
+      `;
+      await client.query(createWishlistTableQuery);
+      console.log("✓ Wishlist table created");
+    }
+
     // Clear existing data if requested
     const shouldClearData = process.argv.includes('--clear');
     if (shouldClearData) {

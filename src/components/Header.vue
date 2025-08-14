@@ -20,7 +20,15 @@
           <i class="fas fa-search"></i>
         </div>
         <div class="header-icons">
+          <!-- <i class="far fa-user"></i> -->
+          <router-link to="/wishlist" class="wishlist-link" v-if="isAuthenticated">
+            <i class="far fa-heart heart-icon"></i>
+            <span v-if="wishlistCount > 0" class="wishlist-count">{{ wishlistCount }}</span>
+          </router-link>
+          <i v-else class="far fa-heart heart-icon" @click="showLoginPrompt"></i>
+          <i class="fas fa-shopping-cart cart-icon"></i>
           <div
+          v-if="isAuthenticated"
             class="user-dropdown-container"
             @click="toggleDropdown"
             ref="userDropdown"
@@ -58,9 +66,6 @@
               </div>
             </div>
           </div>
-          <!-- <i class="far fa-user"></i> -->
-          <i class="far fa-heart heart-icon"></i>
-          <i class="fas fa-shopping-cart cart-icon"></i>
         </div>
       </div>
     </div>
@@ -68,32 +73,55 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { authActions, authStore, isAuthenticated } from '../../stores/auth';
+import apiService from '../services/api.js';
 
 const router = useRouter();
 const props = defineProps({
-  navLinks: {
-    type: Array,
-    default: () => [
-      { text: "Home", to: "/",},
-      { text: "Contact", to: "/contact" },
-      { text: "About", to: "/about" },
-      { text: "Sign Up", to: "/signup" },
-    ],
-  },
+
   searchIcon: { type: String, default: "/images/search icon.png" },
   cartIcon: { type: String, default: "/images/Cart1.png" },
 });
+ const navLinks = computed(() => {
+  const baseLinks = [
+    { text: "Home", to: "/" },
+    { text: "Contact", to: "/contact" },
+    { text: "About", to: "/about" },
+  ];
+  if (!isAuthenticated.value){
+    baseLinks.push({text: "Sign Up", to: "/signup"});
+  }
+  return baseLinks;
+ })
+
 
 const isDropdownOpen = ref(false);
 const userDropdown = ref(null);
+const wishlistCount = ref(0);
+
+const fetchWishlistCount = async () => {
+  if (!isAuthenticated.value) return;
+  
+  try {
+    const response = await apiService.getWishlist();
+    wishlistCount.value = response.count || 0;
+  } catch (error) {
+    console.error('Error fetching wishlist count:', error);
+  }
+};
+
+const showLoginPrompt = () => {
+  alert('Please login to view your wishlist');
+  router.push('/signin');
+};
 
 const toggleDropdown = () =>{
   isDropdownOpen.value = !isDropdownOpen.value
 }
 
-const handleMenuClick = (action) => {
+const handleMenuClick = async (action) => {
   console.log(`${action} clicked`)
   isDropdownOpen.value = false;
 
@@ -117,7 +145,15 @@ const handleMenuClick = (action) => {
       break;
     case 'logout':
       // Handle logout logic here, then redirect user to homepage
-      router.push('/');
+      try{
+        await authActions.logout();
+        console.log('User logged out successfully')
+        alert('Logout Successful');
+        router.push('/');
+      } catch (error){
+        console.error('Logout failed: ', error)
+        alert('Logout failed. Please try again')
+      }
       break;
   }
 }
@@ -129,6 +165,7 @@ const handleClickOutside = (event) =>{
   }
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  fetchWishlistCount(); // Fetch wishlist count on mount
 })
 
 onUnmounted(() => {
@@ -227,12 +264,15 @@ onUnmounted(() => {
 
 
 .header-icons i {
-    padding-top: 7px;
     position: relative;
     height: 36px;
     width: 33.5px;
     font-size: 20px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 }
 
  .header-icons {
@@ -327,6 +367,34 @@ onUnmounted(() => {
 .dropdown-item.logout:hover {
   background-color: rgba(219, 68, 68, 0.2);
   color: #ff6b6b;
+}
+
+.wishlist-link {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  width: 33.5px;
+}
+
+.wishlist-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #db4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 @media (max-width: 768px) {

@@ -19,35 +19,63 @@
           <p class="form-subtitle">Enter your details below</p>
 
           <form @submit.prevent="signUp" class="signup-form">
+            <!-- Name Field -->
             <div class="input-group">
               <input
+                id="name"
                 v-model="formData.name"
+                :disabled="authStore.isLoading"
                 type="text"
-                placeholder="Name"
+                placeholder="Enter your full name"
+                autocomplete="name"
                 class="form-input"
               />
             </div>
-
+              <!-- Email Field -->
             <div class="input-group">
               <input
+                id="email"
                 v-model="formData.email"
-                type="text"
-                placeholder="Email or Phone Number"
+                :disabled="authStore.isLoading"
+                type="email"
+                placeholder="Enter your Email"
+                autocomplete="email"
                 class="form-input"
               />
             </div>
-
+             <!-- Password Field -->
             <div class="input-group">
               <input
                 v-model="formData.password"
-                type="password"
+                :type="showPassword ? 'text' : 'password'"
+                :disabled="authStore.isLoading"
                 placeholder="Password"
+                autocomplete="password"
                 class="form-input"
               />
             </div>
+            <button
+             type="button"
+             @click="togglePasswordVisibilty"
+             class="password-toggle"
+             :disabled="authStore.isLoading"
+             >
+              <i :class="showPassword? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+            </button>
+            <!-- Error Display -->
+             <div v-if="authStore.error" class="error-message">
+               <i class="fas fa-exclamation-circle"></i>
+               {{ authStore.error }}
+             </div>
 
-            <button type="submit" class="create-account-btn">
-              Create Account
+            <!-- Submit button -->
+            <button 
+            type="submit" 
+            class="create-account-btn"
+            :disabled="authStore.isLoading || !isFormValid" 
+            >
+            <span v-if="authStore.isLoading" class="loading-spinner"></span>
+            {{ authStore.isLoading? 'Creating Account...' : 'Create Account' }}
             </button>
 
             <button
@@ -95,26 +123,14 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import apiService from "../services/api";
+import { ref, computed, watch, onMounted } from "vue";
+// import apiService from "../services/api";
 import { RouterLink, useRouter } from "vue-router";
+import { authActions, authStore, isAuthenticated } from "../../stores/auth";
+
 // import axios from "axios";
 
 const router = useRouter()
-
-const signUp = async ()=>{
-    try{
-        const response = await apiService.postUser(formData.value);
-        if (response){
-            console.log("Signup sucessful, redirecting to homepage");
-            alert("Signup sucessful. Redirecting to home page")
-            router.push({name: "HomeView"})
-        }
-    } catch (err){
-        console.error("Error signing up: ", err);
-        alert(`Signupfailed: ${err.mesage}`)
-    }
-};
 
 const formData = ref({
   name: "",
@@ -122,16 +138,74 @@ const formData = ref({
   password: "",
 });
 
+const showPassword = ref(false);
+const emailError = ref('');
+const passwordError = ref('');
+
+const isFormValid = computed(() => {
+  return formData.value.name.trim() !== '' && 
+         formData.value.email.trim() !== '' && 
+         formData.value.password.trim() !== '' && 
+         !emailError.value &&
+         !passwordError.value;
+});
+
+// Watchers for real-time validation
+watch(() => formData.value.email, (newEmail) => {
+  if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+    emailError.value = 'Please enter a valid email address';
+  } else {
+    emailError.value = '';
+  }
+});
+
+watch(() => formData.value.password, (newPassword) => {
+  if (newPassword && newPassword.length < 8) {
+    passwordError.value = 'Password must be at least 8 characters long';
+  } else {
+    passwordError.value = '';
+  }
+});
+
+// Methods
+const togglePasswordVisibilty = () =>{
+  showPassword.value = !showPassword.value;
+}
+
+const signUp = async ()=>{
+  if (!isFormValid) {
+    return;
+  }
+
+    try{
+        authActions.clearError();
+        const response = await authActions.register(formData.value);
+        if (response){
+            console.log("Signup sucessful, redirecting to homepage");
+            alert("Signup sucessful. Redirecting to home page")
+            router.push({name: "HomeView"})
+        }
+    } catch (err){
+        console.error("Registration error: ", err);
+        alert(`Signupfailed: ${err.message}`)
+    }
+};
+
+
 
 const signUpWithGoogle = () => {
   console.log("Sign up with Google clicked");
   // Handle Google sign up logic here
 };
 
-const goToLogin = () => {
-  console.log("Go to login clicked");
-  router.push('/signin');
-};
+// const goToLogin = () => {
+//   console.log("Go to login clicked");
+//   router.push('/signin');
+// };
+
+onMounted(() => {
+  authActions.clearError();
+});
 </script>
 
 <style scoped>
