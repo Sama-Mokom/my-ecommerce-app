@@ -3,10 +3,12 @@ import TopBanner from './components/TopBanner.vue'
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
 import BackToTop from './components/BackToTop.vue'
+import AuthLoading from './components/AuthLoading.vue'
 </script>
 
 <template>
   <div>
+    <AuthLoading />
     <TopBanner />
     <Header />
     <RouterView />

@@ -7,7 +7,13 @@
       <span v-if="product.isNew" class="new-badge">NEW</span>
       <img :src="product.image" :alt="product.name" />
       <div class="product-actions">
-        <button class="action-btn"><i class="far fa-heart"></i></button>
+        <button 
+          class="action-btn" 
+          @click="handleToggleWishlist"
+          :class="{ 'in-wishlist': isInWishlist }"
+        >
+          <i :class="isInWishlist ? 'fas fa-heart' : 'far fa-heart'"></i>
+        </button>
         <button class="action-btn"><i class="far fa-eye"></i></button>
       </div>
       <button v-if="showAddToCart" class="add-to-cart">Add To Cart</button>
@@ -32,16 +38,67 @@
       </div>
       <div
         v-if="product.colors.length > 0 && product.section === `explore`"
-        class="color-options"
-      ><span v-for="(color, idx) in product.colors" :key="idx" :class="['color-dot', color, { active: idx === 0 }]"/>
+        class="color-options" 
+      >
+        <span v-for="(color, idx) in product.colors" :key="idx" :class="['color-dot', color, { active: idx === 0 }]"/>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
+import apiService from '../services/api.js';
+import { authStore } from '../../stores/auth';
+
 const props = defineProps({
   product: { type: Object, required: true },
   showAddToCart: { type: Boolean, default: true },
 });
+
+const isInWishlist = ref(false);
+
+const checkWishlistStatus = async () => {
+  if (!authStore.user) return;
+  
+  try {
+    const response = await apiService.getWishlist();
+    isInWishlist.value = response.wishlist.some(item => item.productId === props.product.id);
+  } catch (error) {
+    console.error('Error checking wishlist status:', error);
+  }
+};
+
+const handleToggleWishlist = async () => {
+  if (!authStore.user) {
+    // Redirect to login or show login modal
+    alert('Please login to add items to wishlist');
+    return;
+  }
+
+  try {
+    await apiService.toggleWishlist(props.product.id);
+    isInWishlist.value = !isInWishlist.value;
+  } catch (error) {
+    console.error('Error toggling wishlist:', error);
+  }
+};
+
+onMounted(() => {
+  checkWishlistStatus();
+});
 </script>
+
+<style scoped>
+.action-btn.in-wishlist {
+  color: #ff4444;
+}
+
+.action-btn.in-wishlist i {
+  color: #ff4444;
+}
+
+.action-btn:hover {
+  color: #ff4444;
+}
+</style>

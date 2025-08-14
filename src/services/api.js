@@ -330,6 +330,39 @@ class ApiService {
   isAuthenticated() {
     return !!this.accessToken;
   }
+
+  // Wishlist methods
+  async toggleWishlist(productId) {
+    try {
+      return await this.fetchWithErrorHandling(`${API_BASE_URL}/wishlist/toggle`, {
+        method: "POST",
+        body: JSON.stringify({ productId }),
+      });
+    } catch (error) {
+      console.error("Toggle wishlist error:", error);
+      throw error;
+    }
+  }
+
+  async getWishlist() {
+    try {
+      return await this.fetchWithErrorHandling(`${API_BASE_URL}/wishlist`);
+    } catch (error) {
+      console.error("Get wishlist error:", error);
+      throw error;
+    }
+  }
+
+  async removeFromWishlist(productId) {
+    try {
+      return await this.fetchWithErrorHandling(`${API_BASE_URL}/wishlist/${productId}`, {
+        method: "DELETE",
+      });
+    } catch (error) {
+      console.error("Remove from wishlist error:", error);
+      throw error;
+    }
+  }
 }
 
 const apiService = new ApiService();
@@ -351,4 +384,7 @@ export const {
   getAccessToken,
   clearAccessToken,
   processQueue,
+  toggleWishlist,
+  getWishlist,
+  removeFromWishlist,
 } = apiService;

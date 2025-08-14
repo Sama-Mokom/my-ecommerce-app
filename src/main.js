@@ -4,13 +4,14 @@ import './assets/style.css'
 import App from './App.vue'
 import VueSplide from '@splidejs/vue-splide'
 import '@splidejs/splide/dist/css/splide.min.css'
-import router from '/src/components/router'
+import router from './components/router.js'
 import { authActions } from '../stores/auth'
 
 
-const initializeApp = async () =>{
+const initializeApp = async () => {
     try {
       await authActions.initAuth()
+      console.log('Authentication initialization completed');
     } catch (error) {
       console.log('Failed to initialize auth: ', error);
     }  
@@ -21,6 +22,12 @@ const app = createApp(App)
 app.use(router)
 app.use(VueSplide)
 
+// Wait for authentication to complete before mounting
 initializeApp().then(() => {
+    console.log('Mounting app...');
+    app.mount('#app')
+}).catch(error => {
+    console.error('Failed to initialize app:', error);
+    // Still mount the app even if auth fails
     app.mount('#app')
 })

@@ -1,11 +1,13 @@
 import { createWebHistory, createRouter } from "vue-router";
-import { isAuthenticated } from "../services/api";
+import { isAuthenticated } from "../../stores/auth";
+import { watch } from "vue";
 
 import HomeView from "./HomeView.vue";
 import SignUp from "./SignUp.vue";
 import SignIn from "./SignIn.vue";
 import Contact from "./Contact.vue";
 import AboutView from "./AboutView.vue";
+import Wishlist from "./Wishlist.vue";
 // import SignUpv2 from "./SignUpv2.vue";
 
 
@@ -30,6 +32,14 @@ const routes = [
       name: "SignIn",
       meta: {
         requiresGuest: true
+      }
+    },
+    {
+      path: "/wishlist",
+      component: Wishlist,
+      name: "Wishlist",
+      meta: {
+        requiresAuth: true
       }
     },
     // Protected routes which will be used later on
@@ -63,18 +73,34 @@ const router = createRouter({
 });
 
 // Navigation gaurds for protected routes
-router.beforeEach((to, from, next) =>{
-  if (to.meta.requiresAuth && !isAuthenticated.value) {
+router.beforeEach(async (to, from, next) => {
+  // Import authStore here to avoid circular dependency issues
+  const { authStore } = await import('../../stores/auth.js');
+  
+  // If authentication is still loading, wait for it to complete
+  if (authStore.isLoading) {
+    // Wait for authentication to complete
+    await new Promise(resolve => {
+      const unwatch = watch(() => authStore.isLoading, (loading) => {
+        if (!loading) {
+          unwatch();
+          resolve();
+        }
+      });
+    });
+  }
+
+  if (to.meta.requiresAuth && !authStore.user) {
     // Redirect the user to the login page
     next({
-      name: 'Login',
+      name: 'SignIn',
       query: {redirect: to.fullPath}
     });
     return;
   }
 
   // Check if route is guest-only (login/signup) but user is authenticated
-  if (to.meta.requiresGuest && isAuthenticated.value) {
+  if (to.meta.requiresGuest && authStore.user) {
     // Redirect authenticated users away from login/signup
     next({ name: 'HomeView' });
     return;

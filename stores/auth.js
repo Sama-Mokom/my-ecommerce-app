@@ -1,9 +1,9 @@
 import {reactive, computed} from 'vue';
-import apiService from '../src/services/api';
+import apiService from '../src/services/api.js';
 
 export const authStore = reactive({
     user: null,
-    isLoading: false,
+    isLoading: true, // Start with loading true
     error: null
 });
 
@@ -27,17 +27,25 @@ export const authActions = {
               return;
             }
           }
-          const result = await apiService.getCurrentUser();
-          authStore.user = result.user;
-          console.log('Auth initialized successfully: ', result.user);
-
+          
+          // If we have a token, try to get the current user
+          if (apiService.getAccessToken()) {
+            const result = await apiService.getCurrentUser();
+            authStore.user = result.user;
+            console.log('Auth initialized successfully: ', result.user);
+          }
         } catch (error) {
-        console.log('No valid session found', error.message);
-        authStore.user = null;
-        try { apiService.clearAccessToken(); } catch(_) {}
+          console.log('No valid session found', error.message);
+          authStore.user = null;
+          try { apiService.clearAccessToken(); } catch(_) {}
         } finally {
           authStore.isLoading = false;
         }
+    },
+
+    // Check if authentication is ready
+    isAuthReady() {
+        return !authStore.isLoading;
     },
 
     // Register a new user

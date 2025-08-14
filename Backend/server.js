@@ -567,6 +567,112 @@ app.get("/getProducts/:section", (req, res) => {
   });
 });
 
+// Wishlist endpoints
+app.post("/wishlist/toggle", authenticateToken, async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const userId = req.user.userId;
+
+    if (!productId) {
+      return res.status(400).json({ error: "Product ID is required" });
+    }
+
+    // Check if product exists
+    const productCheckQuery = "SELECT id FROM products WHERE id = $1";
+    const productResult = await server_connect.query(productCheckQuery, [productId]);
+    
+    if (productResult.rows.length === 0) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    // Check if item already exists in wishlist
+    const checkWishlistQuery = "SELECT id FROM wishlist WHERE \"userId\" = $1 AND \"productId\" = $2";
+    const wishlistResult = await server_connect.query(checkWishlistQuery, [userId, productId]);
+
+    if (wishlistResult.rows.length > 0) {
+      // Item exists, remove it
+      const deleteQuery = "DELETE FROM wishlist WHERE \"userId\" = $1 AND \"productId\" = $2";
+      await server_connect.query(deleteQuery, [userId, productId]);
+      
+      res.status(200).json({ 
+        message: "Item removed from wishlist",
+        action: "removed"
+      });
+    } else {
+      // Item doesn't exist, add it
+      const insertQuery = "INSERT INTO wishlist (\"userId\", \"productId\") VALUES ($1, $2)";
+      await server_connect.query(insertQuery, [userId, productId]);
+      
+      res.status(201).json({ 
+        message: "Item added to wishlist",
+        action: "added"
+      });
+    }
+  } catch (error) {
+    console.error("Wishlist toggle error:", error);
+    res.status(500).json({ 
+      error: "Server error", 
+      details: error.message 
+    });
+  }
+});
+
+app.get("/wishlist", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Get wishlist items with product details
+    const wishlistQuery = `
+      SELECT w.id, w."dateAdded", p.*
+      FROM wishlist w
+      JOIN products p ON w."productId" = p.id
+      WHERE w."userId" = $1
+      ORDER BY w."dateAdded" DESC
+    `;
+    
+    const wishlistResult = await server_connect.query(wishlistQuery, [userId]);
+    
+    // Format the response to include full image URLs
+    const wishlistItems = wishlistResult.rows.map(item => ({
+      ...item,
+      image: `http://localhost:8080${item.image}`
+    }));
+
+    res.status(200).json({ 
+      wishlist: wishlistItems,
+      count: wishlistItems.length
+    });
+  } catch (error) {
+    console.error("Get wishlist error:", error);
+    res.status(500).json({ 
+      error: "Server error", 
+      details: error.message 
+    });
+  }
+});
+
+app.delete("/wishlist/:productId", authenticateToken, async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const userId = req.user.userId;
+
+    const deleteQuery = "DELETE FROM wishlist WHERE \"userId\" = $1 AND \"productId\" = $2";
+    const result = await server_connect.query(deleteQuery, [userId, productId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Wishlist item not found" });
+    }
+
+    res.status(200).json({ message: "Item removed from wishlist" });
+  } catch (error) {
+    console.error("Remove wishlist item error:", error);
+    res.status(500).json({ 
+      error: "Server error", 
+      details: error.message 
+    });
+  }
+});
+
 //Test endpoint. Use this for debugging
 app.post("/test", (req, res) => {
   console.log("Test endpoint hit");

@@ -21,7 +21,11 @@
         </div>
         <div class="header-icons">
           <!-- <i class="far fa-user"></i> -->
-          <i class="far fa-heart heart-icon"></i>
+          <router-link to="/wishlist" class="wishlist-link" v-if="isAuthenticated">
+            <i class="far fa-heart heart-icon"></i>
+            <span v-if="wishlistCount > 0" class="wishlist-count">{{ wishlistCount }}</span>
+          </router-link>
+          <i v-else class="far fa-heart heart-icon" @click="showLoginPrompt"></i>
           <i class="fas fa-shopping-cart cart-icon"></i>
           <div
           v-if="isAuthenticated"
@@ -72,6 +76,7 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { authActions, authStore, isAuthenticated } from '../../stores/auth';
+import apiService from '../services/api.js';
 
 const router = useRouter();
 const props = defineProps({
@@ -94,6 +99,23 @@ const props = defineProps({
 
 const isDropdownOpen = ref(false);
 const userDropdown = ref(null);
+const wishlistCount = ref(0);
+
+const fetchWishlistCount = async () => {
+  if (!isAuthenticated.value) return;
+  
+  try {
+    const response = await apiService.getWishlist();
+    wishlistCount.value = response.count || 0;
+  } catch (error) {
+    console.error('Error fetching wishlist count:', error);
+  }
+};
+
+const showLoginPrompt = () => {
+  alert('Please login to view your wishlist');
+  router.push('/signin');
+};
 
 const toggleDropdown = () =>{
   isDropdownOpen.value = !isDropdownOpen.value
@@ -143,6 +165,7 @@ const handleClickOutside = (event) =>{
   }
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  fetchWishlistCount(); // Fetch wishlist count on mount
 })
 
 onUnmounted(() => {
@@ -241,12 +264,15 @@ onUnmounted(() => {
 
 
 .header-icons i {
-    padding-top: 7px;
     position: relative;
     height: 36px;
     width: 33.5px;
     font-size: 20px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 }
 
  .header-icons {
@@ -341,6 +367,34 @@ onUnmounted(() => {
 .dropdown-item.logout:hover {
   background-color: rgba(219, 68, 68, 0.2);
   color: #ff6b6b;
+}
+
+.wishlist-link {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  width: 33.5px;
+}
+
+.wishlist-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #db4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 @media (max-width: 768px) {
