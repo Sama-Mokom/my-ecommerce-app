@@ -8,6 +8,7 @@ import SignIn from "./SignIn.vue";
 import Contact from "./Contact.vue";
 import AboutView from "./AboutView.vue";
 import Wishlist from "./Wishlist.vue";
+import Cart from "./Cart.vue";
 // import SignUpv2 from "./SignUpv2.vue";
 
 
@@ -38,6 +39,14 @@ const routes = [
       path: "/wishlist",
       component: Wishlist,
       name: "Wishlist",
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/cart",
+      component: Cart,
+      name: "Cart",
       meta: {
         requiresAuth: true
       }

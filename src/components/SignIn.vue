@@ -40,15 +40,31 @@
             <div class="input-group">
               <input
                 v-model="formData.password"
-                type="password"
+                :type="showPassword ? 'text' : 'password'"
+                :disabled="authStore.isLoading"
                 placeholder="Password"
+                autocomplete="password"
                 class="form-input"
               />
+              <button
+                type="button"
+                @click="togglePasswordVisibilty"
+                class="password-toggle"
+                :disabled="authStore.isLoading"
+              >
+                <i
+                  :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
+                ></i>
+              </button>
             </div>
             <div class="button-container">
               <button
-              :disabled="authStore.isLoading || !isFormValid"
-               type="submit" class="create-account-btn">Login</button>
+                :disabled="authStore.isLoading || !isFormValid"
+                type="submit"
+                class="create-account-btn"
+              >
+                Login
+              </button>
 
               <button
                 type="button"
@@ -61,7 +77,7 @@
 
             <p class="login-link">
               Don't have an account?
-              <RouterLink to="SignUp"  class="login-link-text"
+              <RouterLink to="SignUp" class="login-link-text"
                 >Sign Up</RouterLink
               >
             </p>
@@ -85,32 +101,46 @@ const formData = ref({
   password: "",
 });
 
+const showPassword = ref(false);
 const emailError = ref("");
 const passwordError = ref("");
 
 const isFormValid = computed(() => {
-  return formData.value.email.trim() !== '' && 
-         formData.value.password.trim() !== '' && 
-         !emailError.value &&
-         !passwordError.value;
+  return (
+    formData.value.email.trim() !== "" &&
+    formData.value.password.trim() !== "" &&
+    !emailError.value &&
+    !passwordError.value
+  );
 });
 
 // Watchers for real-time validation
-watch(() => formData.value.email, (newEmail) => {
-  if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
-    emailError.value = 'Please enter a valid email address';
-  } else {
-    emailError.value = '';
+watch(
+  () => formData.value.email,
+  (newEmail) => {
+    if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+      emailError.value = "Please enter a valid email address";
+    } else {
+      emailError.value = "";
+    }
   }
-});
+);
 
-watch(() => formData.value.password, (newPassword) => {
-  if (newPassword && newPassword.length < 8) {
-    passwordError.value = 'Password must be at least 8 characters long';
-  } else {
-    passwordError.value = '';
+watch(
+  () => formData.value.password,
+  (newPassword) => {
+    if (newPassword && newPassword.length < 8) {
+      passwordError.value = "Password must be at least 8 characters long";
+    } else {
+      passwordError.value = "";
+    }
   }
-});
+);
+
+
+const togglePasswordVisibilty = () => {
+  showPassword.value = !showPassword.value;
+};
 
 const login = async () => {
   //login logic will be put in here
@@ -118,25 +148,23 @@ const login = async () => {
     return;
   }
 
-    try{
-        authActions.clearError();
-        const response = await authActions.login(formData.value);
-        if (response){
-            console.log("Login sucessful, redirecting to homepage");
-            alert("Login sucessful. Redirecting to home page")
-            router.push({name: "HomeView"})
-        }
-    } catch (err){
-        console.error("Login error: ", err);
-        alert(`Login failed: ${err.message}`)
+  try {
+    authActions.clearError();
+    const response = await authActions.login(formData.value);
+    if (response) {
+      console.log("Login sucessful, redirecting to homepage");
+      alert("Login sucessful. Redirecting to home page");
+      router.push({ name: "HomeView" });
     }
+  } catch (err) {
+    console.error("Login error: ", err);
+    alert(`Login failed: ${err.message}`);
+  }
 };
 
-
-
 const signUpWithGoogle = () => {
-    console.log("Sign up with Google clicked");
-}
+  console.log("Sign up with Google clicked");
+};
 
 const forgotPassword = () => {
   console.log("forgot password clicked");
@@ -256,6 +284,23 @@ onMounted(() => {
   border-bottom-color: #db4444;
 }
 
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.password-toggle:hover {
+  background: #f0f0f0;
+}
+
 .form-input::placeholder {
   color: #999999;
   font-weight: 400;
@@ -301,7 +346,7 @@ onMounted(() => {
 }
 
 .google-signup-btn:hover {
-    color: #db4444;
+  color: #db4444;
   /* background-color: #f8f9fa;
   border-color: #dadce0; */
 }

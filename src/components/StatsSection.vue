@@ -2,41 +2,26 @@
   <div class="stats-section-container">
     <div class="container">
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon-wrapper">
-            <i class="fas fa-store"></i>
-          </div>
-          <h3 class="stat-value">10.5k</h3>
-          <p class="stat-description">Sellers active our site</p>
-        </div>
-        <div class="stat-card active">
-          <div class="stat-icon-wrapper">
-            <i class="fas fa-dollar-sign"></i>
-          </div>
-          <h3 class="stat-value">33k</h3>
-          <p class="stat-description">Monthly Product Sale</p>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon-wrapper">
-            <i class="fas fa-shopping-bag"></i>
-          </div>
-          <h3 class="stat-value">45.5k</h3>
-          <p class="stat-description">Customer active in our site</p>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon-wrapper">
-            <i class="fas fa-money-bill-wave"></i>
-          </div>
-          <h3 class="stat-value">25k</h3>
-          <p class="stat-description">Annual gross sale in our site</p>
-        </div>
+        <StatsCard 
+        v-for="stat in stats"
+        :key="stat.value"
+        :icon="stat.icon"
+        :value="stat.value"
+        :description="stat.description"/>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-// No script logic needed for this static component
+import StatsCard from './StatsCard.vue';
+
+const stats = [
+  {icon:"src/assets/images/shop.png", value:"10.5K", description:"Sellers active on our site"},
+  {icon:"src/assets/images/coin.png", value:"33K", description:"Monthly Product Sale"},
+  {icon:"src/assets/images/bag.png", value:"45.5K", description:"Customers active on our site"},
+  {icon:"src/assets/images/money-bag.png", value:"25K", description:"Annual gross sale on our site"}
+]
 </script>
 
 <style scoped>
@@ -62,6 +47,8 @@
 }
 
 .stat-card {
+  width: 270px;
+  height: 230px;
   background-color: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
@@ -73,10 +60,19 @@
   transition: all 0.3s ease;
 }
 
+.icon{
+  width: 40px;
+  height:40px;
+}
+
 .stat-card:hover {
   background-color: #db4444;
   color: #fff;
   border-color: #db4444;
+}
+
+.stat-card:hover img{
+  filter: invert(1);
 }
 
 .stat-card.active .stat-icon-wrapper {

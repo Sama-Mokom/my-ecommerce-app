@@ -35,19 +35,20 @@
 <style scoped>
 .about-us-container {
   font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  padding: 80px 0;
+  padding: 60px 0;
   color: #000;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 20px 0 20px;
 }
 
 .breadcrumb {
-  margin-bottom: 80px;
-  color: #a0a0a0;
+  margin-bottom: 60px;
+  color: #9F9F9F;
+  font-size: 16px;
 }
 
 .breadcrumb a {
@@ -57,64 +58,85 @@
 }
 
 .breadcrumb span {
-  color: #a0a0a0;
+  color: #000;
 }
 
 .about-content {
   display: flex;
-  gap: 70px;
+  /* gap: 30px; */
   align-items: center;
 }
 
 .story-section {
   flex: 1;
   max-width: 500px;
+  text-align: left;
+  padding-right: 30px;
 }
 
 .story-title {
-  font-size: 48px;
-  font-weight: 600;
+  font-size: 40px;
+  font-weight: 700;
   line-height: 1.2;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
 .story-text {
   font-size: 16px;
   line-height: 1.6;
   margin-bottom: 24px;
-  opacity: 0.8;
+  /* opacity: 0.8; */
+  color: #9F9F9F;
 }
 
 .image-section {
-  flex: 1;
+  position: relative;
+  margin-right: -40px;
+  width: 50%;
+  /* flex: 1;
   display: flex;
   justify-content: center;
-  align-items: center;
-  background-color: #e0b4c8; /* Approximate background color from image */
-  padding: 20px;
-  border-radius: 8px;
-  min-height: 400px; /* Ensure a minimum height for the image section */
+  align-items: center; */
+  /* background-color: #e107b2; Approximate background color from image */
+  /* padding: 20px; */
+  /* border-radius: 8px; */
+  /* min-height: 400px; Ensure a minimum height for the image section */
 }
 
 .about-image {
-  max-width: 100%;
-  max-height: 500px; /* Adjust as needed */
-  object-fit: contain;
+  width: 100%;
+  height: auto; 
+  max-height: 500px;
+  object-fit: cover;
   border-radius: 8px;
+  display:block;
+  margin-right: -40px;
 }
 
 @media (max-width: 992px) {
+
+  .container {
+    padding: 0 20px;
+  }
+
   .about-content {
     flex-direction: column;
-    text-align: center;
   }
 
   .story-section {
     max-width: 100%;
+    text-align: center;
+     padding-right: 0;
+    margin-bottom: 40px;
   }
 
   .story-title {
-    font-size: 38px;
+    font-size: 36px;
+  }
+
+  .image-section {
+    width: 100%;
+    margin-right: -20px;
   }
 }
 
@@ -123,8 +145,13 @@
     padding: 40px 0;
   }
 
+   .container {
+    padding: 0 20px;
+  }
+
   .breadcrumb {
     margin-bottom: 40px;
+    font-size: 14px;
   }
 
   .story-title {
@@ -139,16 +166,21 @@
 
   .image-section {
     min-height: 300px;
+    padding: 20px;
   }
 }
 
 @media (max-width: 480px) {
-  .container {
-    padding: 0 15px;
+   .story-title {
+    font-size: 28px;
+  }
+  
+  .breadcrumb {
+    margin-bottom: 30px;
   }
 
-  .story-title {
-    font-size: 28px;
+  .image-section {
+    margin-right: -15px;
   }
 }
 </style>

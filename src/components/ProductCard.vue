@@ -16,7 +16,7 @@
         </button>
         <button class="action-btn"><i class="far fa-eye"></i></button>
       </div>
-      <button v-if="showAddToCart" class="add-to-cart">Add To Cart</button>
+      <button v-if="showAddToCart" class="add-to-cart" @click="handleAddToCart">Add To Cart</button>
     </div>
     <div class="product-info">
       <h3>{{ product.name }}</h3>
@@ -50,12 +50,14 @@
 import { ref, onMounted } from 'vue';
 import apiService from '../services/api.js';
 import { authStore } from '../../stores/auth';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
   product: { type: Object, required: true },
   showAddToCart: { type: Boolean, default: true },
 });
 
+const router = useRouter();
 const isInWishlist = ref(false);
 
 const checkWishlistStatus = async () => {
@@ -81,6 +83,26 @@ const handleToggleWishlist = async () => {
     isInWishlist.value = !isInWishlist.value;
   } catch (error) {
     console.error('Error toggling wishlist:', error);
+  }
+};
+
+const handleAddToCart = async () => {
+  if (!authStore.user) {
+    alert('Please login to add items to cart');
+    router.push('/signin');
+    return;
+  }
+
+  try {
+    await apiService.addToCart(props.product.id, 1);
+    alert('Product added to cart successfully!');
+  } catch (error) {
+    if (error.message.includes('already in your cart')) {
+      alert('This product is already in your cart');
+    } else {
+      alert('Failed to add product to cart. Please try again.');
+    }
+    console.error('Error adding to cart:', error);
   }
 };
 

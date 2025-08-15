@@ -2,42 +2,16 @@
   <div class="team-members-container">
     <div class="container">
       <div class="team-grid">
-        <div class="team-member-card">
-          <div class="member-image-wrapper">
-            <img src="http://googleusercontent.com/file_content/1" alt="Tom Cruise" class="member-image" />
-          </div>
-          <h3 class="member-name">Tom Cruise</h3>
-          <p class="member-title">Founder & Chairman</p>
-          <div class="social-icons">
-            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-          </div>
-        </div>
-        <div class="team-member-card">
-          <div class="member-image-wrapper">
-            <img src="http://googleusercontent.com/file_content/2" alt="Emma Watson" class="member-image" />
-          </div>
-          <h3 class="member-name">Emma Watson</h3>
-          <p class="member-title">Managing Director</p>
-          <div class="social-icons">
-            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-          </div>
-        </div>
-        <div class="team-member-card">
-          <div class="member-image-wrapper">
-            <img src="https://placehold.co/300x300/f5f5f5/a0a0a0?text=Will+Smith" alt="Will Smith" class="member-image" />
-          </div>
-          <h3 class="member-name">Will Smith</h3>
-          <p class="member-title">Product Designer</p>
-          <div class="social-icons">
-            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-          </div>
-        </div>
+        <MemberCard 
+        v-for="member in members"
+        :key="member.name"
+        :image="member.image"
+        :name="member.name"
+        :title="member.title"
+        :twitterLink="member.twitterLink"
+        :instaLink="member.instaLink"
+        :linkedLink="member.linkedLink"
+        />
       </div>
       <div class="carousel-dots">
         <span class="dot active"></span>
@@ -50,7 +24,13 @@
 </template>
 
 <script setup>
-// No script logic needed for this static component
+import MemberCard from './MemberCard.vue';
+
+const members = [
+  {image: "src/assets/images/TomCruise.png", name:"Tom Cruise", title:"Founder & Chairman", twitterLink:"#", instaLink:"#", linkedLink:"#"},
+  {image: "src/assets/images/EmmaWatson.png", name:"Emma Watson", title:"Managing Director", twitterLink:"#", instaLink:"#", linkedLink:"#"},
+  {image: "src/assets/images/WillSmith.png", name:"Will Smith", title:"Product Designer", twitterLink:"#", instaLink:"#", linkedLink:"#"}
+]
 </script>
 
 <style scoped>
@@ -75,56 +55,7 @@
   margin-bottom: 40px;
 }
 
-.team-member-card {
-  background-color: #fff;
-  border-radius: 4px;
-  text-align: left;
-}
 
-.member-image-wrapper {
-  background-color: #f5f5f5; /* Light gray background for image area */
-  padding: 20px;
-  border-radius: 4px;
-  margin-bottom: 24px;
-  height: 300px; /* Fixed height for image wrapper */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.member-image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  border-radius: 4px;
-}
-
-.member-name {
-  font-size: 32px;
-  font-weight: 500;
-  margin-bottom: 8px;
-}
-
-.member-title {
-  font-size: 16px;
-  opacity: 0.8;
-  margin-bottom: 16px;
-}
-
-.social-icons {
-  display: flex;
-  gap: 16px;
-}
-
-.social-link {
-  color: #000;
-  font-size: 20px;
-  transition: color 0.3s ease;
-}
-
-.social-link:hover {
-  color: #db4444;
-}
 
 .carousel-dots {
   display: flex;

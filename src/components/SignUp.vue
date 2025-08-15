@@ -31,7 +31,7 @@
                 class="form-input"
               />
             </div>
-              <!-- Email Field -->
+            <!-- Email Field -->
             <div class="input-group">
               <input
                 id="email"
@@ -43,7 +43,7 @@
                 class="form-input"
               />
             </div>
-             <!-- Password Field -->
+            <!-- Password Field -->
             <div class="input-group">
               <input
                 v-model="formData.password"
@@ -53,29 +53,33 @@
                 autocomplete="password"
                 class="form-input"
               />
+              <button
+                type="button"
+                @click="togglePasswordVisibilty"
+                class="password-toggle"
+                :disabled="authStore.isLoading"
+              >
+                <i
+                  :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
+                ></i>
+              </button>
             </div>
-            <button
-             type="button"
-             @click="togglePasswordVisibilty"
-             class="password-toggle"
-             :disabled="authStore.isLoading"
-             >
-              <i :class="showPassword? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
-            </button>
             <!-- Error Display -->
-             <div v-if="authStore.error" class="error-message">
-               <i class="fas fa-exclamation-circle"></i>
-               {{ authStore.error }}
-             </div>
+            <div v-if="authStore.error" class="error-message">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ authStore.error }}
+            </div>
 
             <!-- Submit button -->
-            <button 
-            type="submit" 
-            class="create-account-btn"
-            :disabled="authStore.isLoading || !isFormValid" 
+            <button
+              type="submit"
+              class="create-account-btn"
+              :disabled="authStore.isLoading || !isFormValid"
             >
-            <span v-if="authStore.isLoading" class="loading-spinner"></span>
-            {{ authStore.isLoading? 'Creating Account...' : 'Create Account' }}
+              <span v-if="authStore.isLoading" class="loading-spinner"></span>
+              {{
+                authStore.isLoading ? "Creating Account..." : "Create Account"
+              }}
             </button>
 
             <button
@@ -130,7 +134,7 @@ import { authActions, authStore, isAuthenticated } from "../../stores/auth";
 
 // import axios from "axios";
 
-const router = useRouter()
+const router = useRouter();
 
 const formData = ref({
   name: "",
@@ -139,59 +143,65 @@ const formData = ref({
 });
 
 const showPassword = ref(false);
-const emailError = ref('');
-const passwordError = ref('');
+const emailError = ref("");
+const passwordError = ref("");
 
 const isFormValid = computed(() => {
-  return formData.value.name.trim() !== '' && 
-         formData.value.email.trim() !== '' && 
-         formData.value.password.trim() !== '' && 
-         !emailError.value &&
-         !passwordError.value;
+  return (
+    formData.value.name.trim() !== "" &&
+    formData.value.email.trim() !== "" &&
+    formData.value.password.trim() !== "" &&
+    !emailError.value &&
+    !passwordError.value
+  );
 });
 
 // Watchers for real-time validation
-watch(() => formData.value.email, (newEmail) => {
-  if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
-    emailError.value = 'Please enter a valid email address';
-  } else {
-    emailError.value = '';
+watch(
+  () => formData.value.email,
+  (newEmail) => {
+    if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+      emailError.value = "Please enter a valid email address";
+    } else {
+      emailError.value = "";
+    }
   }
-});
+);
 
-watch(() => formData.value.password, (newPassword) => {
-  if (newPassword && newPassword.length < 8) {
-    passwordError.value = 'Password must be at least 8 characters long';
-  } else {
-    passwordError.value = '';
+watch(
+  () => formData.value.password,
+  (newPassword) => {
+    if (newPassword && newPassword.length < 8) {
+      passwordError.value = "Password must be at least 8 characters long";
+    } else {
+      passwordError.value = "";
+    }
   }
-});
+);
 
 // Methods
-const togglePasswordVisibilty = () =>{
+const togglePasswordVisibilty = () => {
   showPassword.value = !showPassword.value;
-}
+};
 
-const signUp = async ()=>{
+const signUp = async () => {
   if (!isFormValid) {
     return;
   }
 
-    try{
-        authActions.clearError();
-        const response = await authActions.register(formData.value);
-        if (response){
-            console.log("Signup sucessful, redirecting to homepage");
-            alert("Signup sucessful. Redirecting to home page")
-            router.push({name: "HomeView"})
-        }
-    } catch (err){
-        console.error("Registration error: ", err);
-        alert(`Signupfailed: ${err.message}`)
+  try {
+    authActions.clearError();
+    const response = await authActions.register(formData.value);
+    if (response) {
+      console.log("Signup sucessful, redirecting to homepage");
+      alert("Signup sucessful. Redirecting to home page");
+      router.push({ name: "HomeView" });
     }
+  } catch (err) {
+    console.error("Registration error: ", err);
+    alert(`Signupfailed: ${err.message}`);
+  }
 };
-
-
 
 const signUpWithGoogle = () => {
   console.log("Sign up with Google clicked");
@@ -317,6 +327,23 @@ onMounted(() => {
 
 .form-input:focus {
   border-bottom-color: #db4444;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.password-toggle:hover {
+  background: #f0f0f0;
 }
 
 .form-input::placeholder {

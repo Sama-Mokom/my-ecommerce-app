@@ -100,7 +100,7 @@ const startCountdown = () => {
   }, 1000);
 };
 onMounted(() => {
-  // startCountdown();
+  startCountdown();
 });
 
 onUnmounted(() => {

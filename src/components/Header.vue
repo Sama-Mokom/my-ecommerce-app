@@ -26,7 +26,11 @@
             <span v-if="wishlistCount > 0" class="wishlist-count">{{ wishlistCount }}</span>
           </router-link>
           <i v-else class="far fa-heart heart-icon" @click="showLoginPrompt"></i>
-          <i class="fas fa-shopping-cart cart-icon"></i>
+          <router-link to="/cart" class="cart-link" v-if="isAuthenticated">
+            <i class="fas fa-shopping-cart cart-icon"></i>
+            <span v-if="cartCount > 0" class="cart-count">{{ cartCount }}</span>
+          </router-link>
+          <i v-else class="fas fa-shopping-cart cart-icon" @click="showCartLoginPrompt"></i>
           <div
           v-if="isAuthenticated"
             class="user-dropdown-container"
@@ -100,6 +104,7 @@ const props = defineProps({
 const isDropdownOpen = ref(false);
 const userDropdown = ref(null);
 const wishlistCount = ref(0);
+const cartCount = ref(0); // Added cartCount state
 
 const fetchWishlistCount = async () => {
   if (!isAuthenticated.value) return;
@@ -112,8 +117,24 @@ const fetchWishlistCount = async () => {
   }
 };
 
+const fetchCartCount = async () => {
+  if (!isAuthenticated.value) return;
+  
+  try {
+    const response = await apiService.getCart();
+    cartCount.value = response.count || 0;
+  } catch (error) {
+    console.error('Error fetching cart count:', error);
+  }
+};
+
 const showLoginPrompt = () => {
   alert('Please login to view your wishlist');
+  router.push('/signin');
+};
+
+const showCartLoginPrompt = () => {
+  alert('Please login to view your cart');
   router.push('/signin');
 };
 
@@ -166,6 +187,7 @@ const handleClickOutside = (event) =>{
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
   fetchWishlistCount(); // Fetch wishlist count on mount
+  fetchCartCount(); // Fetch cart count on mount
 })
 
 onUnmounted(() => {
@@ -381,6 +403,34 @@ onUnmounted(() => {
 }
 
 .wishlist-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #db4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.cart-link {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  width: 33.5px;
+}
+
+.cart-count {
   position: absolute;
   top: -8px;
   right: -8px;

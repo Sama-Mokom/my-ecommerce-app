@@ -103,7 +103,7 @@ class ApiService {
         headers.Authorization = `Bearer ${token}`;
       }
       return fetch(url, {
-        ...options,
+        ...finalOptions,
         headers,
         credentials: "include", //To make sure cookies are included
       });
@@ -363,6 +363,51 @@ class ApiService {
       throw error;
     }
   }
+
+  // Cart methods
+  async addToCart(productId, quantity = 1) {
+    try {
+      return await this.fetchWithErrorHandling(`${API_BASE_URL}/cart/add`, {
+        method: "POST",
+        body: JSON.stringify({ productId, quantity }),
+      });
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      throw error;
+    }
+  }
+
+  async getCart() {
+    try {
+      return await this.fetchWithErrorHandling(`${API_BASE_URL}/cart`);
+    } catch (error) {
+      console.error("Get cart error:", error);
+      throw error;
+    }
+  }
+
+  async updateCartItem(productId, quantity) {
+    try {
+      return await this.fetchWithErrorHandling(`${API_BASE_URL}/cart/update`, {
+        method: "PUT",
+        body: JSON.stringify({ productId, quantity }),
+      });
+    } catch (error) {
+      console.error("Update cart error:", error);
+      throw error;
+    }
+  }
+
+  async removeFromCart(productId) {
+    try {
+      return await this.fetchWithErrorHandling(`${API_BASE_URL}/cart/${productId}`, {
+        method: "DELETE",
+      });
+    } catch (error) {
+      console.error("Remove from cart error:", error);
+      throw error;
+    }
+  }
 }
 
 const apiService = new ApiService();
@@ -387,4 +432,8 @@ export const {
   toggleWishlist,
   getWishlist,
   removeFromWishlist,
+  addToCart,
+  getCart,
+  updateCartItem,
+  removeFromCart,
 } = apiService;

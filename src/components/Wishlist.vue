@@ -26,7 +26,7 @@
               <i class="fas fa-trash"></i>
             </button>
             <img :src="item.image" :alt="item.name" />
-            <button class="add-to-cart-btn">
+            <button class="add-to-cart-btn" @click="handleAddToCart(item)">
               <i class="fas fa-shopping-cart"></i>
               Add To Cart
             </button>
@@ -75,7 +75,7 @@
               <i class="far fa-eye"></i>
             </button>
             <img :src="product.image" :alt="product.name" />
-            <button class="add-to-cart-btn">
+            <button class="add-to-cart-btn" @click="handleAddToCart(product)">
               <i class="fas fa-shopping-cart"></i>
               Add To Cart
             </button>
@@ -113,11 +113,14 @@
 import { ref, onMounted } from "vue";
 import apiService from "../services/api.js";
 import { authStore } from "../../stores/auth";
+import { useRouter } from 'vue-router';
 // import {fetchWishlistCount} from './Header.vue'
 
 const wishlistItems = ref([]);
 const recommendedProducts = ref([]);
 const isLoading = ref(false);
+const router = useRouter();
+
 
 const fetchWishlist = async () => {
   if (!authStore.user) return;
@@ -153,6 +156,31 @@ const handleRemoveFromWishlist = async (productId) => {
     );
   } catch (error) {
     console.error("Error removing from wishlist:", error);
+  }
+};
+
+const handleAddToCart = async (product) => {
+  if (!authStore.user) {
+    alert('Please login to add items to cart');
+    router.push('/signin');
+    return;
+  }
+  if (!product || !product.id) {
+    console.error('Product data is missing or invalid');
+    alert('Unable to add product to cart. Product data is missing.');
+    return;
+  }
+
+  try {
+    await apiService.addToCart(product.id, 1);
+    alert('Product added to cart successfully!');
+  } catch (error) {
+    if (error.message.includes('already in your cart')) {
+      alert('This product is already in your cart');
+    } else {
+      alert('Failed to add product to cart. Please try again.');
+    }
+    console.error('Error adding to cart:', error);
   }
 };
 
