@@ -19,8 +19,11 @@
       <div class="footer-column">
         <h3>Account</h3>
         <ul>
-          <li v-for="link in accountLinks" :key="link.text">
-            <a :href="link.href">{{ link.text }}</a>
+          <li v-for="(link, i) in accountLinks"
+          :key="i"
+          class="nav-link">
+          <router-link :to="link.to">{{ link.text }}</router-link>
+            <!-- <a :href="link.href">{{ link.text }}</a> -->
           </li>
         </ul>
       </div>
@@ -69,11 +72,11 @@
 <script setup>
 import { ref } from 'vue';
 const accountLinks = ref([
-  { text: 'My Account', href: '#' },
-  { text: 'Login / Register', href: '#' },
-  { text: 'Cart', href: '#' },
-  { text: 'Wishlist', href: '#' },
-  { text: 'Shop', href: '#' },
+  { text: 'My Account', to: '/account' },
+  { text: 'Login / Register', to: 'signin' },
+  { text: 'Cart', to: '/cart' },
+  { text: 'Wishlist', to: '/wishlist' },
+  { text: 'Shop', to: '/shop' },
 ]);
 const quickLinks = ref([
   { text: 'Privacy Policy', href: '#' },

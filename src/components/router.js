@@ -9,6 +9,8 @@ import Contact from "./Contact.vue";
 import AboutView from "./AboutView.vue";
 import Wishlist from "./Wishlist.vue";
 import Cart from "./Cart.vue";
+import CheckOut from './CheckOut.vue';
+import Account from './Account.vue';
 // import SignUpv2 from "./SignUpv2.vue";
 
 
@@ -51,13 +53,21 @@ const routes = [
         requiresAuth: true
       }
     },
+    {
+  path: '/checkout',
+  component: CheckOut,
+  name: 'CheckOut',
+  meta: {
+    requiresAuth: true
+  }
+},
     // Protected routes which will be used later on
-    // {
-    //   path: "/account",
-    //   component: Account, //account component to be built later
-    //   name: "Account",
-    //   meta: {requiresAuth: true}
-    // },
+    {
+      path: "/account",
+      component: Account, //account component to be built later
+      name: "Account",
+      meta: {requiresAuth: true}
+    },
     // {
     //    path: "/orders",
     //   component: Orders, //orders component to be built later

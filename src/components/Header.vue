@@ -11,8 +11,8 @@
           :to="link.to"
           class="nav-link"
           :class="{ active: link.active }"
-          >{{ link.text }}</router-link
-        >
+          >{{ link.text }}
+          </router-link>
       </nav>
       <div class="header-actions">
         <div class="search-box">

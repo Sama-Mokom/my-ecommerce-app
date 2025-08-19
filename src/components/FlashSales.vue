@@ -59,7 +59,7 @@
       <!-- Error State -->
       <div v-else-if="error" class="error-state">
         <p>Error Loading products: {{ error }}</p>
-        <button @click="fetchProducts" class="view-all-btn">Retry</button>
+        <button @click="fetchProducts()" class="view-all-btn">Retry</button>
       </div>
       <!-- Products Display  -->
       <div class="products-grid" v-else-if="products && products.length > 0">

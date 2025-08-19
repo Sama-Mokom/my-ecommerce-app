@@ -225,10 +225,10 @@ onMounted(() => {
 }
 
 .red-bar {
-  width: 4px;
-  height: 20px;
-  background-color: #ff4444;
-  border-radius: 2px;
+  width: 20px;
+  height: 40px;
+  background-color: #DB4444;
+  border-radius: 4px;
 }
 
 .action-button {
@@ -243,8 +243,9 @@ onMounted(() => {
 }
 
 .action-button:hover {
-  background: #333;
+  background: #DB4444;
   color: white;
+  border: none;
 }
 
 .wishlist-grid,
@@ -311,7 +312,7 @@ onMounted(() => {
   position: absolute;
   top: 10px;
   left: 50px;
-  background: #ff4444;
+  background: #DB4444;
   color: white;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;

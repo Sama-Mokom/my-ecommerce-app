@@ -19,7 +19,7 @@
        <!-- Error State -->
       <div v-if="error" class="error-state">
         <p>Error Loading products: {{ error }}</p>
-        <button @click="fetchProducts" class="view-all-btn">Retry</button>
+        <button @click="fetchProducts()" class="view-all-btn">Retry</button>
       </div>
       <!-- Display products State -->
       <div v-else-if="products && products.length > 0" class="products-grid large-grid">

@@ -81,7 +81,7 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit to the files which can be uploaded
+    fileSize: 10 * 1024 * 1024, // 10MB limit to the files which can be uploaded
   },
 });
 
@@ -666,6 +666,182 @@ app.delete("/wishlist/:productId", authenticateToken, async (req, res) => {
     res.status(200).json({ message: "Item removed from wishlist" });
   } catch (error) {
     console.error("Remove wishlist item error:", error);
+    res.status(500).json({ 
+      error: "Server error", 
+      details: error.message 
+    });
+  }
+});
+
+// Cart endpoints
+app.post("/cart/add", authenticateToken, async (req, res) => {
+  try {
+    const { productId, quantity = 1 } = req.body;
+    const userId = req.user.userId;
+
+    if (!productId) {
+      return res.status(400).json({ error: "Product ID is required" });
+    }
+
+    // Check if product exists and get its price
+    const productCheckQuery = "SELECT id, price FROM products WHERE id = $1";
+    const productResult = await server_connect.query(productCheckQuery, [productId]);
+    
+    if (productResult.rows.length === 0) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const product = productResult.rows[0];
+    const subTotal = product.price * quantity;
+
+    // Check if item already exists in cart
+    const checkCartQuery = "SELECT id FROM cart WHERE \"userId\" = $1 AND \"productId\" = $2";
+    const cartResult = await server_connect.query(checkCartQuery, [userId, productId]);
+
+    if (cartResult.rows.length > 0) {
+      return res.status(409).json({ 
+        error: "Product is already in your cart",
+        message: "This product is already in your cart"
+      });
+    }
+
+    // Add item to cart
+    const insertQuery = `
+      INSERT INTO cart ("userId", "productId", quantity, price, "subTotal") 
+      VALUES ($1, $2, $3, $4, $5)
+    `;
+    await server_connect.query(insertQuery, [userId, productId, quantity, product.price, subTotal]);
+    
+    res.status(201).json({ 
+      message: "Item added to cart successfully",
+      cartItem: {
+        productId,
+        quantity,
+        price: product.price,
+        subTotal
+      }
+    });
+  } catch (error) {
+    console.error("Add to cart error:", error);
+    res.status(500).json({ 
+      error: "Server error", 
+      details: error.message 
+    });
+  }
+});
+
+app.get("/cart", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Get cart items with product details
+    const cartQuery = `
+      SELECT c.id, c."productId", c.quantity, c.price, c."subTotal", c."dateAdded", p.*
+      FROM cart c
+      JOIN products p ON c."productId" = p.id
+      WHERE c."userId" = $1
+      ORDER BY c."dateAdded" DESC
+    `;
+    
+    const cartResult = await server_connect.query(cartQuery, [userId]);
+    
+    // Format the response to include full image URLs
+    const cartItems = cartResult.rows.map(item => ({
+      ...item,
+      image: `http://localhost:8080${item.image}`
+    }));
+
+    // Calculate totals
+    const subTotal = cartItems.reduce((sum, item) => sum + parseFloat(item.subTotal), 0);
+    const shipping = 0; // Free shipping
+    const total = subTotal + shipping;
+
+    res.status(200).json({ 
+      cart: cartItems,
+      summary: {
+        subTotal: subTotal.toFixed(2),
+        shipping: "Free",
+        total: total.toFixed(2)
+      },
+      count: cartItems.length
+    });
+  } catch (error) {
+    console.error("Get cart error:", error);
+    res.status(500).json({ 
+      error: "Server error", 
+      details: error.message 
+    });
+  }
+});
+
+app.put("/cart/update", authenticateToken, async (req, res) => {
+  try {
+    const { productId, quantity } = req.body;
+    const userId = req.user.userId;
+
+    if (!productId || !quantity) {
+      return res.status(400).json({ error: "Product ID and quantity are required" });
+    }
+
+    if (quantity <= 0) {
+      return res.status(400).json({ error: "Quantity must be greater than 0" });
+    }
+
+    // Get product price to recalculate subtotal
+    const productQuery = "SELECT price FROM products WHERE id = $1";
+    const productResult = await server_connect.query(productQuery, [productId]);
+    
+    if (productResult.rows.length === 0) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const product = productResult.rows[0];
+    const subTotal = product.price * quantity;
+
+    // Update cart item
+    const updateQuery = `
+      UPDATE cart 
+      SET quantity = $1, "subTotal" = $2 
+      WHERE "userId" = $3 AND "productId" = $4
+    `;
+    const result = await server_connect.query(updateQuery, [quantity, subTotal, userId, productId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Cart item not found" });
+    }
+
+    res.status(200).json({ 
+      message: "Cart updated successfully",
+      updatedItem: {
+        productId,
+        quantity,
+        subTotal
+      }
+    });
+  } catch (error) {
+    console.error("Update cart error:", error);
+    res.status(500).json({ 
+      error: "Server error", 
+      details: error.message 
+    });
+  }
+});
+
+app.delete("/cart/:productId", authenticateToken, async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const userId = req.user.userId;
+
+    const deleteQuery = "DELETE FROM cart WHERE \"userId\" = $1 AND \"productId\" = $2";
+    const result = await server_connect.query(deleteQuery, [userId, productId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Cart item not found" });
+    }
+
+    res.status(200).json({ message: "Item removed from cart" });
+  } catch (error) {
+    console.error("Remove cart item error:", error);
     res.status(500).json({ 
       error: "Server error", 
       details: error.message 

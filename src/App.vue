@@ -7,7 +7,7 @@ import AuthLoading from './components/AuthLoading.vue'
 </script>
 
 <template>
-  <div>
+  <div class="main-container">
     <AuthLoading />
     <TopBanner />
     <Header />
@@ -18,5 +18,7 @@ import AuthLoading from './components/AuthLoading.vue'
 </template>
 
 <style scoped>
-
+.main-container{
+  overflow: hidden;
+}
 </style>

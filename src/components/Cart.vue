@@ -1,8 +1,10 @@
 <template>
   <div class="cart-container">
     <!-- Breadcrumb Navigation -->
-    <div class="breadcrumb">
-      <span>Home / Cart</span>
+     <div class="breadcrumb">
+      <router-link to="/">Home</router-link> / 
+      <!-- <router-link to="/cart">Cart</router-link> /  -->
+       <span>Cart</span>
     </div>
 
     <!-- Cart Items Table -->
@@ -216,7 +218,8 @@ const proceedToCheckout = () => {
     return;
   }
   // TODO: Implement checkout logic
-  alert("Checkout functionality will be implemented soon!");
+  // alert("Checkout functionality will be implemented soon!");
+  router.push("checkout");
 };
 
 onMounted(() => {
@@ -236,6 +239,16 @@ onMounted(() => {
   margin-bottom: 30px;
   color: #666;
   font-size: 14px;
+}
+
+.breadcrumb a {
+  color: #666;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: #db4444;
+  text-decoration: underline;
 }
 
 .cart-table-container {
@@ -305,19 +318,53 @@ onMounted(() => {
 }
 
 .image-container{
-  width: 54px;
-  height: 54px;
-  position:relative;
+width: 80px;  /* Increased from 54px */
+  height: 80px; /* Increased from 54px */
+  position: relative;
+  overflow: visible;
+  flex-shrink: 0;
+  /* background-color: #f5f5f5; Added background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px; /* Optional: adds rounded corners */
+}
+
+/* .image-container > img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+} */
+
+.product-image {
+  background: transparent;
+  padding: 0px;
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: contain; /* Changed from cover to contain to show full image */
+  border-radius: 0;
   flex-shrink: 0;
 }
 
-.product-image {
-  width: 54px;
-  height: 54px;
-  object-fit: cover;
-  border-radius: 0;
-  flex-shrink: 0;
-  background: none;
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Increased from 16px */
+  position: relative;
+}
+
+.product-name {
+  margin-left: 0;
+  font-weight: 400;
+  color: #000;
+  flex: 1;
+  font-size: 16px; /* Increased from 14px */
 }
 
 .product-info:hover .remove-btn {
@@ -441,12 +488,13 @@ onMounted(() => {
 }
 
 .btn-primary {
+  margin-right: 200px;
   background: #db4444;
   color: white;
 }
 
 .btn-primary:hover {
-  background: #ff4444;
+  background: #c73e3e;
 }
 
 .bottom-section {

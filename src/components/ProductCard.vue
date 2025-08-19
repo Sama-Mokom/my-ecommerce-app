@@ -16,7 +16,7 @@
         </button>
         <button class="action-btn"><i class="far fa-eye"></i></button>
       </div>
-      <button v-if="showAddToCart" class="add-to-cart" @click="handleAddToCart">Add To Cart</button>
+      <button v-if="showAddToCart" class="add-to-cart" @click="handleAddToCart()">Add To Cart</button>
     </div>
     <div class="product-info">
       <h3>{{ product.name }}</h3>

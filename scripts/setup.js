@@ -108,6 +108,37 @@ const setupProject = async () => {
       console.log("✓ Wishlist table created");
     }
 
+    // Check if cart table exists and create if not
+    const cartTableExistsQuery = `
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'cart'
+      );
+    `;
+    
+    const cartTableExists = await client.query(cartTableExistsQuery);
+    
+    if (!cartTableExists.rows[0].exists) {
+      console.log("Creating cart table...");
+      const createCartTableQuery = `
+        CREATE TABLE cart (
+          id SERIAL PRIMARY KEY,
+          "userId" TEXT NOT NULL,
+          "productId" TEXT NOT NULL,
+          quantity INTEGER NOT NULL DEFAULT 1,
+          price DECIMAL(10,2) NOT NULL,
+          "subTotal" DECIMAL(10,2) NOT NULL,
+          "dateAdded" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE("userId", "productId"),
+          FOREIGN KEY ("userId") REFERENCES users(id) ON DELETE CASCADE,
+          FOREIGN KEY ("productId") REFERENCES products(id) ON DELETE CASCADE
+        );
+      `;
+      await client.query(createCartTableQuery);
+      console.log("✓ Cart table created");
+    }
+
     // Clear existing data if requested
     const shouldClearData = process.argv.includes('--clear');
     if (shouldClearData) {
