@@ -91,6 +91,7 @@ const server_connect = new Client({
   port: process.env.DB_PORT || 5432,
   password: process.env.DB_PASSWORD || "Kaparaz",
   database: process.env.DB_NAME || "e-commerce",
+  ssl: process.env.DB_SSL_MODE == 'require' ? {rejectUnauthorized: false} : false
 });
 
 server_connect
