@@ -13,7 +13,7 @@ import dotenv from "dotenv";
 
 // JWT utilities and middleware imports
 import { generateTokens, verifyRefreshToken } from "./utils/jwt.js";
-import { authenticateToken, optionalAuth } from "./middleware/auth.js";
+import { authenticateToken } from "./middleware/auth.js";
 
 // load enviroment variables
 dotenv.config();
@@ -182,6 +182,9 @@ app.post("/postProduct", upload.single("image"), (req, res) => {
     res.status(500).json({ error: "Server error", details: error.message });
   }
 });
+
+
+//USER ENDPOINTS
 
 //Endpoint to add a user to the database
 app.post("/postUser", async (req, res) => {
@@ -501,6 +504,10 @@ app.get("/me", authenticateToken, async (req, res) => {
   }
 });
 
+
+//PRODUCT ENDPOINTS
+
+//Endpoint to fetch all products
 app.get("/getProducts", (req, res) => {
   const select_all_query = "SELECT * FROM products ORDER BY id";
   server_connect.query(select_all_query, [], (err, result) => {
@@ -531,11 +538,11 @@ app.get("/getProducts/:section", (req, res) => {
 
   switch (section) {
     case "flash-sales":
-      // Assuming you add a category column or use discount to identify flash sales will be implemented later on
+      // Will add a category column or use discount to identify flash sales will be implemented later on
       query = "SELECT * FROM products WHERE section = $1 ORDER BY id";
       break;
     case "best-selling":
-      // You might want to add a 'category' or 'is_best_selling' column
+      // Will add a 'category' or 'is_best_selling' column
       // Will use rating as criteria later on 
       query = "SELECT * FROM products WHERE section = $1 ORDER BY id";
       break;
@@ -566,6 +573,30 @@ app.get("/getProducts/:section", (req, res) => {
     }
   });
 });
+
+// Get single product by ID
+// app.get("/product/:id", async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const query = "SELECT * FROM products WHERE id = $1";
+//     const result = await server_connect.query(query, [id]);
+    
+//     if (result.rows.length === 0) {
+//       return res.status(404).json({ error: "Product not found" });
+//     }
+    
+//     const product = {
+//       ...result.rows[0],
+//       image: `http://localhost:8080${result.rows[0].image}`
+//     };
+    
+//     res.status(200).json(product);
+//   } catch (error) {
+//     console.error("Get product error:", error);
+//     res.status(500).json({ error: "Server error", details: error.message });
+//   }
+// });
+
 
 // Wishlist endpoints
 app.post("/wishlist/toggle", authenticateToken, async (req, res) => {
