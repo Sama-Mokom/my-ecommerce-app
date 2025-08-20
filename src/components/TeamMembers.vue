@@ -44,7 +44,7 @@ const currentSlide = ref(0);
 let splideInstance = null;
 const members = [
   {
-    image: "src/assets/images/TomCruise.png",
+    image: "/src/assets/images/TomCruise.png",
     name: "Tom Cruise",
     title: "Founder & Chairman",
     twitterLink: "#",
@@ -52,7 +52,7 @@ const members = [
     linkedLink: "#",
   },
   {
-    image: "src/assets/images/EmmaWatson.png",
+    image: "/src/assets/images/EmmaWatson.png",
     name: "Emma Watson",
     title: "Managing Director",
     twitterLink: "#",
@@ -60,7 +60,7 @@ const members = [
     linkedLink: "#",
   },
   {
-    image: "src/assets/images/WillSmith.png",
+    image: "/src/assets/images/WillSmith.png",
     name: "Will Smith",
     title: "Product Designer",
     twitterLink: "#",
