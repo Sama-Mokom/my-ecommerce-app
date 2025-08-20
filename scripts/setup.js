@@ -15,6 +15,7 @@ const setupProject = async () => {
     port: process.env.DB_PORT || 5432,
     password: process.env.DB_PASSWORD || "Kaparaz", 
     database: process.env.DB_NAME || "e-commerce",
+    ssl: process.env.DB_SSL_MODE == 'require' ? {rejectUnauthorized: false} : false
   });
 
   try {
