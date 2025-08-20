@@ -71,6 +71,10 @@
 
 <script setup>
 import { ref } from 'vue';
+
+import AppStore from "/src/assets/images/download-appstore.png";
+import PlayStore from "/src/assets/images/png-transparent-google-play-store-logo-google-play-app-store-android-wallets-text-label-logo.png";
+
 const accountLinks = ref([
   { text: 'My Account', to: '/account' },
   { text: 'Login / Register', to: 'signin' },
@@ -86,13 +90,13 @@ const quickLinks = ref([
 ]);
 const appLinks = ref([
   {
-    img: "/src/assets/images/download-appstore.png",
-    alt: 'Google Play',
+    img: AppStore,
+    alt: 'App Store',
     href: 'https://www.apple.com/app-store/',
   },
   {
-    img: "/src/assets/images/png-transparent-google-play-store-logo-google-play-app-store-android-wallets-text-label-logo.png",
-    alt: 'App Store',
+    img: PlayStore,
+    alt: 'Google Play',
     href: 'https://play.google.com/store',
   },
 ]);

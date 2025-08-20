@@ -16,11 +16,16 @@
 <script setup>
 import StatsCard from './StatsCard.vue';
 
+import Sellers from "/src/assets/images/shop.png";
+import ProductSales from "/src/assets/images/coin.png";
+import Customers from "/src/assets/images/bag.png";
+import GrossSales from "/src/assets/images/money-bag.png";
+
 const stats = [
-  {icon:"src/assets/images/shop.png", value:"10.5K", description:"Sellers active on our site"},
-  {icon:"src/assets/images/coin.png", value:"33K", description:"Monthly Product Sale"},
-  {icon:"src/assets/images/bag.png", value:"45.5K", description:"Customers active on our site"},
-  {icon:"src/assets/images/money-bag.png", value:"25K", description:"Annual gross sale on our site"}
+  {icon: Sellers, value:"10.5K", description:"Sellers active on our site"},
+  {icon: ProductSales, value:"33K", description:"Monthly Product Sale"},
+  {icon: Customers, value:"45.5K", description:"Customers active on our site"},
+  {icon: GrossSales, value:"25K", description:"Annual gross sale on our site"}
 ]
 </script>
 
