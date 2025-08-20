@@ -522,7 +522,7 @@ app.get("/getProducts", (req, res) => {
     } else {
       const productsWithFullUrls = result.rows.map((products) => ({
         ...products,
-        image: `http://localhost:8080${products.image}`, //full product url for rendering in the frontend
+        image: `${process.env.API_BASE_URL || 'http://localhost:8080'}${products.image}`, //full product url for rendering in the frontend
       }));
       console.log(
         "Products retrieved successfully:",
