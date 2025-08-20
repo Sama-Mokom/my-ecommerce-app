@@ -14,7 +14,7 @@
         >
           <i :class="isInWishlist ? 'fas fa-heart' : 'far fa-heart'"></i>
         </button>
-        <button class="action-btn"><i class="far fa-eye"></i></button>
+        <button class="action-btn" @click="handleViewProduct"><i class="far fa-eye"></i></button>
       </div>
       <button v-if="showAddToCart" class="add-to-cart" @click="handleAddToCart()">Add To Cart</button>
     </div>
@@ -104,6 +104,10 @@ const handleAddToCart = async () => {
     }
     console.error('Error adding to cart:', error);
   }
+};
+
+const handleViewProduct = () => {
+  router.push(`/product/${props.product.id}`);
 };
 
 onMounted(() => {

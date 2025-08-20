@@ -31,13 +31,21 @@
 <script setup>
 import CategoryCard from "./CategoryCard.vue";
 
+
+import Phones from "/src/assets/images/smartphone.png";
+import Computers from "/src/assets/images/Monitor-logo.png";
+import SmartWatch from "/src/assets/images/smartwatch.png";
+import Camera from "/src/assets/images/camera.png";
+import HeadPhones from "/src/assets/images/music.png";
+import Gaming from "/src/assets/images/Gamepad-logo.png";
+
 const categories = [
-  { icon: "/src/assets/images/smartphone.png", label: "Phones" },
-  { icon: "/src/assets/images/Monitor-logo.png", label: "Computers" },
-  { icon: "/src/assets/images/smartwatch.png", label: "SmartWatch" },
-  { icon: "/src/assets/images/camera.png", label: "Camera" },
-  { icon: "/src/assets/images/music.png", label: "HeadPhones" },
-  { icon: "/src/assets/images/Gamepad-logo.png", label: "Gaming" },
+  { icon: Phones, label: "Phones" },
+  { icon: Computers, label: "Computers" },
+  { icon: SmartWatch, label: "SmartWatch" },
+  { icon: Camera, label: "Camera" },
+  { icon: HeadPhones, label: "HeadPhones" },
+  { icon: Gaming, label: "Gaming" },
 ];
 </script>
 
