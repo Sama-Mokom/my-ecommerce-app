@@ -1,5 +1,8 @@
 // import { migrateImages } from './migrateImages.js';
 import { Client } from "pg";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const setupProject = async () => {
   console.log('🚀 Starting project setup...\n');
@@ -7,11 +10,11 @@ const setupProject = async () => {
   console.log('🗄️  Step 1: Updating database...');
   
   const client = new Client({
-    host: "localhost",
-    user: "postgres", 
-    port: 5432,
-    password: "Kaparaz", 
-    database: "e-commerce",
+    host: process.env.DB_HOST || "localhost",
+    user: process.env.DB_USER || "postgres", 
+    port: process.env.DB_PORT || 5432,
+    password: process.env.DB_PASSWORD || "Kaparaz", 
+    database: process.env.DB_NAME || "e-commerce",
   });
 
   try {

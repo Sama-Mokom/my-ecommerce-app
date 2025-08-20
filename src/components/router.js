@@ -11,6 +11,7 @@ import Wishlist from "./Wishlist.vue";
 import Cart from "./Cart.vue";
 import CheckOut from './CheckOut.vue';
 import Account from './Account.vue';
+import ProductDetails from './ProductDetails.vue';
 // import SignUpv2 from "./SignUpv2.vue";
 
 
@@ -36,6 +37,12 @@ const routes = [
       meta: {
         requiresGuest: true
       }
+    },
+     {
+      path: "/product/:id",
+      component: ProductDetails,
+      name: "ProductDetails",
+      props: true
     },
     {
       path: "/wishlist",
