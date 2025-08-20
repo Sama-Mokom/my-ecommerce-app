@@ -30,6 +30,7 @@ app.use(
       "http://localhost:5173",
       "http://127.0.0.1:5173",
       "https://x-clusive.onrender.com",
+      "https://x-clussive-shop.onrender.com",
     ],
     credentials: true,
     optionsSuccessStatus: 200,
