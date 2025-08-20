@@ -566,7 +566,7 @@ app.get("/getProducts/:section", (req, res) => {
     } else {
       const productsWithFullUrls = result.rows.map((product) => ({
         ...product,
-        image: `http://localhost:8080${product.image}`,
+        image: `${process.env.API_BASE_URL}${product.image}`,
       }));
 
       console.log(
@@ -669,7 +669,7 @@ app.get("/wishlist", authenticateToken, async (req, res) => {
     // Format the response to include full image URLs
     const wishlistItems = wishlistResult.rows.map(item => ({
       ...item,
-      image: `http://localhost:8080${item.image}`
+      image: `${process.env.API_BASE_URL}${item.image}`
     }));
 
     res.status(200).json({ 
@@ -782,7 +782,7 @@ app.get("/cart", authenticateToken, async (req, res) => {
     // Format the response to include full image URLs
     const cartItems = cartResult.rows.map(item => ({
       ...item,
-      image: `http://localhost:8080${item.image}`
+      image: `${process.env.API_BASE_URL}${item.image}`
     }));
 
     // Calculate totals
