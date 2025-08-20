@@ -906,7 +906,7 @@ app.use((err, req, res, next) => {
   }
   res.status(500).json({ error: err.message });
 });
-const port = process.env.PORT || 8080;
+const port = process.env.PORT ;
 app.listen(port, () => {
   console.log(`Server is running at port ${port}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
