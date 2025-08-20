@@ -39,12 +39,17 @@ import MemberCard from "./MemberCard.vue";
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import { Splide } from '@splidejs/splide'
 
+import TomCruise from "/src/assets/images/TomCruise.png";
+import EmmaWatson from "/src/assets/images/EmmaWatson.png";
+import WillSmith from "/src/assets/images/WillSmith.png";
+
+
 const splideRef = ref(null);
 const currentSlide = ref(0);
 let splideInstance = null;
 const members = [
   {
-    image: "/src/assets/images/TomCruise.png",
+    image: TomCruise,
     name: "Tom Cruise",
     title: "Founder & Chairman",
     twitterLink: "#",
@@ -52,7 +57,7 @@ const members = [
     linkedLink: "#",
   },
   {
-    image: "/src/assets/images/EmmaWatson.png",
+    image: EmmaWatson,
     name: "Emma Watson",
     title: "Managing Director",
     twitterLink: "#",
@@ -60,7 +65,7 @@ const members = [
     linkedLink: "#",
   },
   {
-    image: "/src/assets/images/WillSmith.png",
+    image: WillSmith,
     name: "Will Smith",
     title: "Product Designer",
     twitterLink: "#",
