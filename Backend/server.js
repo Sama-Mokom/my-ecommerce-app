@@ -10,6 +10,7 @@ import bcrypt from "bcrypt";
 import { debug } from "console";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
+import { createClient } from '@supabase/supabase-js';
 
 // JWT utilities and middleware imports
 import { generateTokens, verifyRefreshToken } from "./utils/jwt.js";
@@ -17,6 +18,11 @@ import { authenticateToken } from "./middleware/auth.js";
 
 // load enviroment variables
 dotenv.config();
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,22 +50,19 @@ app.use(express.json());
 const appRoot = path.join(__dirname, "..");
 
 //serves the static files, in this case images
-app.use("/uploads", express.static(path.join(appRoot, "public/uploads")));
+// app.use("/uploads", express.static(path.join(appRoot, "public/uploads")));
 
-const uploadsDir = path.join(appRoot, "public/uploads/products");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+// const uploadsDir = path.join(appRoot, "public/uploads/products");
+// if (!fs.existsSync(uploadsDir)) {
+//   fs.mkdirSync(uploadsDir, { recursive: true });
+// }
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(appRoot, "public/uploads/products/"));
-  },
-  filename: (req, file, cb) => {
-    //Generates a unique file name to be stored in the uploads folder by joining the original file extension with a random int and the timestamp of when the image was uploaded
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const fileExtension = path.extname(file.originalname);
-    cb(null, "product-" + uniqueSuffix + fileExtension);
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
   },
 });
 
@@ -79,13 +82,13 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB limit to the files which can be uploaded
-  },
-});
+// const upload = multer({
+//   storage: storage,
+//   fileFilter: fileFilter,
+//   limits: {
+//     fileSize: 10 * 1024 * 1024, // 10MB limit to the files which can be uploaded
+//   },
+// });
 
 const server_connect = new Client({
   host: process.env.DB_HOST || "localhost",
@@ -100,91 +103,7 @@ server_connect
   .connect()
   .then(() => console.log("Server connection established"));
 
-//Endpoint to add a product to the database
-app.post("/postProduct", upload.single("image"), (req, res) => {
-  let numericPrice = req.body.originalPrice;
-  if (
-    numericPrice === "" ||
-    numericPrice === undefined ||
-    numericPrice === null
-  ) {
-    numericPrice = null;
-  } else {
-    numericPrice = Number(req.body.originalPrice);
-    if (isNaN(numericPrice)) {
-      return res
-        .status(400)
-        .json({ error: "originalPrice must be a valid number" });
-    }
-  }
-  try {
-    const id = uuidv4();
-    const {
-      name,
-      discount,
-      price,
-      rating,
-      ratingCount,
-      category,
-      section,
-      isNew,
-      colors,
-    } = req.body;
 
-    //Check if an image was provided when uploading a new product
-    if (!req.file) {
-      return res
-        .status(400)
-        .json({ error: "Image file is required to upload a product" });
-    }
-
-    // Create the image URL that will be stored in database
-    const imageUrl = `/uploads/products/${req.file.filename}`;
-
-    const insert_query =
-      'INSERT INTO products (id,name,image,discount,price,"originalPrice",rating,"ratingCount",category,section,"isNew",colors) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)';
-
-    server_connect.query(
-      insert_query,
-      [
-        id,
-        name,
-        imageUrl,
-        discount,
-        price,
-        numericPrice,
-        rating,
-        ratingCount,
-        category,
-        section,
-        isNew,
-        [colors],
-      ],
-      (err, result) => {
-        if (err) {
-          console.log("Database error:", err);
-          //If the insert into the Database fails, delete uploaded file from products directory
-          fs.unlinkSync(req.file.path);
-          res
-            .status(500)
-            .json({ error: "Database error", details: err.message });
-          res.send(err);
-        } else {
-          console.log("Product inserted successfully:", result);
-          res.status(201).json({
-            message: "Product added successfully",
-            productName: name,
-            imageUrl: imageUrl,
-            productId: id,
-          });
-        }
-      }
-    );
-  } catch (error) {
-    console.error("Server error:", error);
-    res.status(500).json({ error: "Server error", details: error.message });
-  }
-});
 
 
 //USER ENDPOINTS
@@ -510,140 +429,396 @@ app.get("/me", authenticateToken, async (req, res) => {
 
 //PRODUCT ENDPOINTS
 
-//Endpoint to fetch all products
-app.get("/getProducts", (req, res) => {
-  const select_all_query = "SELECT * FROM products ORDER BY id";
-  server_connect.query(select_all_query, [], (err, result) => {
-    if (err) {
-      console.error("Error retrieving products", err);
-      res
-        .status(500)
-        .send({ message: "Failed to retrieve products", error: err.message });
-    } else {
-      const productsWithFullUrls = result.rows.map((products) => ({
-        ...products,
-        image: `${process.env.API_BASE_URL || 'http://localhost:8080'}${products.image}`, //full product url for rendering in the frontend
-      }));
-      console.log(
-        "Products retrieved successfully:",
-        productsWithFullUrls.length
-      );
-      res.status(200).json(productsWithFullUrls);
+//Endpoint to add a product to the database
+app.post("/postProduct", upload.single("image"), async (req, res) => {
+  let numericPrice = req.body.originalPrice;
+  if (
+    numericPrice === "" ||
+    numericPrice === undefined ||
+    numericPrice === null
+  ) {
+    numericPrice = null;
+  } else {
+    numericPrice = Number(req.body.originalPrice);
+    if (isNaN(numericPrice)) {
+      return res
+        .status(400)
+        .json({ error: "originalPrice must be a valid number" });
     }
-  });
+  }
+
+  try {
+    const id = uuidv4();
+    const {
+      name,
+      discount,
+      price,
+      rating,
+      ratingCount,
+      category,
+      section,
+      isNew,
+      colors,
+    } = req.body;
+
+    //Check if an image was provided when uploading a new product
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ error: "Image file is required to upload a product" });
+    }
+
+    // This is to upload the image file to supabase using the supabase client we created above
+    const fileBuffer = req.file.buffer;
+    const fileName = `product-${uuidv4()}-${Date.now()}${path.extname(req.file.originalname)}`;
+    const filePath = `products/${fileName}`; //This is the path to the specific image file inside my supabase storage bucket
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('X-Clussive Product images')//Name of my storage bucket on supabase
+      .upload(filePath, fileBuffer, {
+        contentType: req.file.mimetype,
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error("Supabase upload error: ", uploadError);
+      return res.status(500).json({
+        error: "Failed to upload image to Supabase",
+        details: uploadError.message
+      });
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from('X-Clussive Product images') 
+      .getPublicUrl(filePath);
+
+    // Create the image URL that will be stored in database
+    const imageUrl = publicUrlData.publicUrl;
+
+    const insert_query =
+      'INSERT INTO products (id,name,image,discount,price,"originalPrice",rating,"ratingCount",category,section,"isNew",colors) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)';
+
+    // Database query now uses promises to ensure consistency
+    const result = await new Promise((resolve, reject) => {
+      server_connect.query(
+        insert_query,
+        [
+          id,
+          name,
+          imageUrl,
+          discount,
+          price,
+          numericPrice,
+          rating,
+          ratingCount,
+          category,
+          section,
+          isNew,
+          [colors],
+        ],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
+
+    console.log("Product inserted successfully:", result);
+    res.status(201).json({
+      message: "Product added successfully",
+      productName: name,
+      imageUrl: imageUrl,
+      productId: id,
+    });
+
+  } catch (error) {
+    console.error("Server error:", error);
+    
+    // Handle database-specific errors to help debug incase of errors
+    if (error.code) {
+      console.log("Database error:", error);
+      return res.status(500).json({ 
+        error: "Database error", 
+        details: error.message 
+      });
+    }
+
+    // Handle general server-side errors for easier debugging
+    res.status(500).json({ 
+      error: "Server error", 
+      details: error.message 
+    });
+  }
+});
+
+//Endpoint to fetch all products
+app.get("/getProducts", async (req, res) => {
+  try {
+    const select_all_query = "SELECT * FROM products ORDER BY id";
+    
+    // Convert database query to Promise-based approach (matching POST endpoint)
+    const result = await new Promise((resolve, reject) => {
+      server_connect.query(select_all_query, [], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+
+    console.log("Products retrieved successfully:", result.rows.length);
+    
+    res.status(200).json({
+      message: "Products retrieved successfully",
+      count: result.rows.length,
+      products: result.rows
+    });
+
+  } catch (error) {
+    console.error("Server error:", error);
+    
+    // Handle database-specific errors (matching POST endpoint error handling)
+    if (error.code) {
+      console.log("Database error:", error);
+      return res.status(500).json({ 
+        error: "Database error", 
+        details: error.message 
+      });
+    }
+
+    // Handle general server errors
+    res.status(500).json({ 
+      error: "Server error", 
+      details: error.message 
+    });
+  }
 });
 
 // Endpoint to get products by section e.g FlashSales, BestSelling, ExploreProducts...
-app.get("/getProducts/:section", (req, res) => {
-  const section = req.params.section;
-  let query;
-  let params = [section];
+app.get("/getProducts/:section", async (req, res) => {
+  try {
+    const section = req.params.section;
+    let query;
+    let params = [section];
 
-  switch (section) {
-    case "flash-sales":
-      // Will add a category column or use discount to identify flash sales will be implemented later on
-      query = "SELECT * FROM products WHERE section = $1 ORDER BY id";
-      break;
-    case "best-selling":
-      // Will add a 'category' or 'is_best_selling' column
-      // Will use rating as criteria later on 
-      query = "SELECT * FROM products WHERE section = $1 ORDER BY id";
-      break;
-    case "explore":
-      query = "SELECT * FROM products WHERE section = $1 ORDER BY id";
-      break;
-    default:
-      return res.status(400).json({ error: "Invalid section specified" });
-  }
-
-  server_connect.query(query, params, (err, result) => {
-    if (err) {
-      console.error(`Error retrieving ${section} products`, err);
-      res.status(500).json({
-        message: `Failed to retrieve ${section} products`,
-        error: err.message,
-      });
-    } else {
-      const productsWithFullUrls = result.rows.map((product) => ({
-        ...product,
-        image: `${process.env.API_BASE_URL}${product.image}`,
-      }));
-
-      console.log(
-        `Successfully retrieved ${productsWithFullUrls.length} ${section} products. `
-      );
-      res.status(200).json(productsWithFullUrls);
+    switch (section) {
+      case "flash-sales":
+        // Will add a category column or use discount to identify flash sales will be implemented later on
+        query = "SELECT * FROM products WHERE section = $1 ORDER BY id";
+        break;
+      case "best-selling":
+        // Will add a 'category' or 'is_best_selling' column
+        // Will use rating as criteria later on 
+        query = "SELECT * FROM products WHERE section = $1 ORDER BY id";
+        break;
+      case "explore":
+        query = "SELECT * FROM products WHERE section = $1 ORDER BY id";
+        break;
+      default:
+        return res.status(400).json({ error: "Invalid section specified" });
     }
-  });
+
+    // Convert database query to Promise-based approach (matching POST endpoint)
+    const result = await new Promise((resolve, reject) => {
+      server_connect.query(query, params, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+
+    console.log(`Successfully retrieved ${result.rows.length} ${section} products.`);
+    
+    res.status(200).json({
+      message: `${section} products retrieved successfully`,
+      section: section,
+      count: result.rows.length,
+      products: result.rows
+    });
+
+  } catch (error) {
+    console.error("Server error:", error);
+    
+    // Handle database-specific errors (matching POST endpoint error handling)
+    if (error.code) {
+      console.log("Database error:", error);
+      return res.status(500).json({ 
+        error: "Database error", 
+        details: error.message 
+      });
+    }
+
+    // Handle general server errors
+    res.status(500).json({ 
+      error: "Server error", 
+      details: error.message 
+    });
+  }
 });
 
 // Get single product by ID
-// app.get("/product/:id", async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const query = "SELECT * FROM products WHERE id = $1";
-//     const result = await server_connect.query(query, [id]);
+app.get("/product/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const query = "SELECT * FROM products WHERE id = $1";
     
-//     if (result.rows.length === 0) {
-//       return res.status(404).json({ error: "Product not found" });
-//     }
+    // Convert database query to Promise-based approach 
+    const result = await new Promise((resolve, reject) => {
+      server_connect.query(query, [id], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
     
-//     const product = {
-//       ...result.rows[0],
-//       image: `http://localhost:8080${result.rows[0].image}`
-//     };
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        error: "Product not found",
+        details: `No product found with ID: ${id}`
+      });
+    }
     
-//     res.status(200).json(product);
-//   } catch (error) {
-//     console.error("Get product error:", error);
-//     res.status(500).json({ error: "Server error", details: error.message });
-//   }
-// });
+    const product = result.rows[0];
+    
+    // Since image URLs are already stored as full Supabase URLs from the POST endpoint,
+    // we don't need to modify them - just return the product as is
+    console.log(`Product retrieved successfully: ${product.name} (ID: ${id})`);
+    
+    res.status(200).json({
+      message: "Product retrieved successfully",
+      productId: id,
+      product: product
+    });
 
+  } catch (error) {
+    console.error("Server error:", error);
+    
+    // Handle database-specific errors (matching other endpoints error handling)
+    if (error.code) {
+      console.log("Database error:", error);
+      return res.status(500).json({ 
+        error: "Database error", 
+        details: error.message 
+      });
+    }
+
+    // Handle general server errors
+    res.status(500).json({ 
+      error: "Server error", 
+      details: error.message 
+    });
+  }
+});
 
 // Wishlist endpoints
+
 app.post("/wishlist/toggle", authenticateToken, async (req, res) => {
   try {
     const { productId } = req.body;
     const userId = req.user.userId;
 
     if (!productId) {
-      return res.status(400).json({ error: "Product ID is required" });
+      return res.status(400).json({ 
+        error: "Validation error",
+        details: "Product ID is required" 
+      });
     }
 
-    // Check if product exists
+    // Check if product exists - converted to Promise-based approach
     const productCheckQuery = "SELECT id FROM products WHERE id = $1";
-    const productResult = await server_connect.query(productCheckQuery, [productId]);
+    const productResult = await new Promise((resolve, reject) => {
+      server_connect.query(productCheckQuery, [productId], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
     
     if (productResult.rows.length === 0) {
-      return res.status(404).json({ error: "Product not found" });
+      return res.status(404).json({ 
+        error: "Product not found",
+        details: `No product found with ID: ${productId}`
+      });
     }
 
-    // Check if item already exists in wishlist
+    // Check if item already exists in wishlist - converted to Promise-based approach
     const checkWishlistQuery = "SELECT id FROM wishlist WHERE \"userId\" = $1 AND \"productId\" = $2";
-    const wishlistResult = await server_connect.query(checkWishlistQuery, [userId, productId]);
+    const wishlistResult = await new Promise((resolve, reject) => {
+      server_connect.query(checkWishlistQuery, [userId, productId], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
 
     if (wishlistResult.rows.length > 0) {
-      // Item exists, remove it
+      // Item exists, remove it - converted to Promise-based approach
       const deleteQuery = "DELETE FROM wishlist WHERE \"userId\" = $1 AND \"productId\" = $2";
-      await server_connect.query(deleteQuery, [userId, productId]);
+      await new Promise((resolve, reject) => {
+        server_connect.query(deleteQuery, [userId, productId], (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        });
+      });
+      
+      console.log(`Item removed from wishlist - User: ${userId}, Product: ${productId}`);
       
       res.status(200).json({ 
         message: "Item removed from wishlist",
-        action: "removed"
+        action: "removed",
+        userId: userId,
+        productId: productId
       });
     } else {
-      // Item doesn't exist, add it
+      // Item doesn't exist, add it - converted to Promise-based approach
       const insertQuery = "INSERT INTO wishlist (\"userId\", \"productId\") VALUES ($1, $2)";
-      await server_connect.query(insertQuery, [userId, productId]);
+      await new Promise((resolve, reject) => {
+        server_connect.query(insertQuery, [userId, productId], (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        });
+      });
+      
+      console.log(`Item added to wishlist - User: ${userId}, Product: ${productId}`);
       
       res.status(201).json({ 
         message: "Item added to wishlist",
-        action: "added"
+        action: "added",
+        userId: userId,
+        productId: productId
       });
     }
   } catch (error) {
-    console.error("Wishlist toggle error:", error);
+    console.error("Server error:", error);
+    
+    // Handle database-specific errors (matching other endpoints error handling)
+    if (error.code) {
+      console.log("Database error:", error);
+      return res.status(500).json({ 
+        error: "Database error", 
+        details: error.message 
+      });
+    }
+
+    // Handle general server errors
     res.status(500).json({ 
       error: "Server error", 
       details: error.message 
@@ -655,7 +830,7 @@ app.get("/wishlist", authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    // Get wishlist items with product details
+    // Get wishlist items with product details - converted to Promise-based approach
     const wishlistQuery = `
       SELECT w.id, w."dateAdded", p.*
       FROM wishlist w
@@ -664,20 +839,39 @@ app.get("/wishlist", authenticateToken, async (req, res) => {
       ORDER BY w."dateAdded" DESC
     `;
     
-    const wishlistResult = await server_connect.query(wishlistQuery, [userId]);
+    const wishlistResult = await new Promise((resolve, reject) => {
+      server_connect.query(wishlistQuery, [userId], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
     
-    // Format the response to include full image URLs
-    const wishlistItems = wishlistResult.rows.map(item => ({
-      ...item,
-      image: `${process.env.API_BASE_URL}${item.image}`
-    }));
+    const wishlistItems = wishlistResult.rows;
+
+    console.log(`Wishlist retrieved successfully for user ${userId}: ${wishlistItems.length} items`);
 
     res.status(200).json({ 
-      wishlist: wishlistItems,
-      count: wishlistItems.length
+      message: "Wishlist retrieved successfully",
+      userId: userId,
+      count: wishlistItems.length,
+      wishlist: wishlistItems
     });
   } catch (error) {
-    console.error("Get wishlist error:", error);
+    console.error("Server error:", error);
+    
+    // Handle database-specific errors (matching other endpoints error handling)
+    if (error.code) {
+      console.log("Database error:", error);
+      return res.status(500).json({ 
+        error: "Database error", 
+        details: error.message 
+      });
+    }
+
+    // Handle general server errors
     res.status(500).json({ 
       error: "Server error", 
       details: error.message 
@@ -690,16 +884,46 @@ app.delete("/wishlist/:productId", authenticateToken, async (req, res) => {
     const { productId } = req.params;
     const userId = req.user.userId;
 
+    // Delete from wishlist - converted to Promise-based approach
     const deleteQuery = "DELETE FROM wishlist WHERE \"userId\" = $1 AND \"productId\" = $2";
-    const result = await server_connect.query(deleteQuery, [userId, productId]);
+    const result = await new Promise((resolve, reject) => {
+      server_connect.query(deleteQuery, [userId, productId], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Wishlist item not found" });
+      return res.status(404).json({ 
+        error: "Wishlist item not found",
+        details: `No wishlist item found for user ${userId} and product ${productId}`
+      });
     }
 
-    res.status(200).json({ message: "Item removed from wishlist" });
+    console.log(`Wishlist item deleted successfully - User: ${userId}, Product: ${productId}`);
+
+    res.status(200).json({ 
+      message: "Item removed from wishlist",
+      userId: userId,
+      productId: productId,
+      deletedCount: result.rowCount
+    });
   } catch (error) {
-    console.error("Remove wishlist item error:", error);
+    console.error("Server error:", error);
+    
+    // Handle database-specific errors (matching other endpoints error handling)
+    if (error.code) {
+      console.log("Database error:", error);
+      return res.status(500).json({ 
+        error: "Database error", 
+        details: error.message 
+      });
+    }
+
+    // Handle general server errors
     res.status(500).json({ 
       error: "Server error", 
       details: error.message 
@@ -714,40 +938,74 @@ app.post("/cart/add", authenticateToken, async (req, res) => {
     const userId = req.user.userId;
 
     if (!productId) {
-      return res.status(400).json({ error: "Product ID is required" });
+      return res.status(400).json({ 
+        error: "Validation error",
+        details: "Product ID is required" 
+      });
     }
 
-    // Check if product exists and get its price
+    // Check if product exists and get its price - converted to Promise-based approach
     const productCheckQuery = "SELECT id, price FROM products WHERE id = $1";
-    const productResult = await server_connect.query(productCheckQuery, [productId]);
+    const productResult = await new Promise((resolve, reject) => {
+      server_connect.query(productCheckQuery, [productId], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
     
     if (productResult.rows.length === 0) {
-      return res.status(404).json({ error: "Product not found" });
+      return res.status(404).json({ 
+        error: "Product not found",
+        details: `No product found with ID: ${productId}`
+      });
     }
 
     const product = productResult.rows[0];
     const subTotal = product.price * quantity;
 
-    // Check if item already exists in cart
+    // Check if item already exists in cart - converted to Promise-based approach
     const checkCartQuery = "SELECT id FROM cart WHERE \"userId\" = $1 AND \"productId\" = $2";
-    const cartResult = await server_connect.query(checkCartQuery, [userId, productId]);
+    const cartResult = await new Promise((resolve, reject) => {
+      server_connect.query(checkCartQuery, [userId, productId], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
 
     if (cartResult.rows.length > 0) {
       return res.status(409).json({ 
-        error: "Product is already in your cart",
-        message: "This product is already in your cart"
+        error: "Product already in cart",
+        details: "This product is already in your cart"
       });
     }
 
-    // Add item to cart
+    // Add item to cart - converted to Promise-based approach
     const insertQuery = `
       INSERT INTO cart ("userId", "productId", quantity, price, "subTotal") 
       VALUES ($1, $2, $3, $4, $5)
     `;
-    await server_connect.query(insertQuery, [userId, productId, quantity, product.price, subTotal]);
+    await new Promise((resolve, reject) => {
+      server_connect.query(insertQuery, [userId, productId, quantity, product.price, subTotal], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+    
+    console.log(`Item added to cart successfully - User: ${userId}, Product: ${productId}, Quantity: ${quantity}`);
     
     res.status(201).json({ 
       message: "Item added to cart successfully",
+      userId: userId,
+      productId: productId,
       cartItem: {
         productId,
         quantity,
@@ -756,7 +1014,18 @@ app.post("/cart/add", authenticateToken, async (req, res) => {
       }
     });
   } catch (error) {
-    console.error("Add to cart error:", error);
+    console.error("Server error:", error);
+    
+    // Handle database-specific errors (matching other endpoints error handling)
+    if (error.code) {
+      console.log("Database error:", error);
+      return res.status(500).json({ 
+        error: "Database error", 
+        details: error.message 
+      });
+    }
+
+    // Handle general server errors
     res.status(500).json({ 
       error: "Server error", 
       details: error.message 
@@ -764,11 +1033,12 @@ app.post("/cart/add", authenticateToken, async (req, res) => {
   }
 });
 
+
 app.get("/cart", authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    // Get cart items with product details
+    // Get cart items with product details - converted to Promise-based approach
     const cartQuery = `
       SELECT c.id, c."productId", c.quantity, c.price, c."subTotal", c."dateAdded", p.*
       FROM cart c
@@ -777,30 +1047,49 @@ app.get("/cart", authenticateToken, async (req, res) => {
       ORDER BY c."dateAdded" DESC
     `;
     
-    const cartResult = await server_connect.query(cartQuery, [userId]);
+    const cartResult = await new Promise((resolve, reject) => {
+      server_connect.query(cartQuery, [userId], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
     
-    // Format the response to include full image URLs
-    const cartItems = cartResult.rows.map(item => ({
-      ...item,
-      image: `${process.env.API_BASE_URL}${item.image}`
-    }));
+    const cartItems = cartResult.rows;
 
     // Calculate totals
     const subTotal = cartItems.reduce((sum, item) => sum + parseFloat(item.subTotal), 0);
     const shipping = 0; // Free shipping
     const total = subTotal + shipping;
 
+    console.log(`Cart retrieved successfully for user ${userId}: ${cartItems.length} items, total: $${total.toFixed(2)}`);
+
     res.status(200).json({ 
+      message: "Cart retrieved successfully",
+      userId: userId,
+      count: cartItems.length,
       cart: cartItems,
       summary: {
         subTotal: subTotal.toFixed(2),
         shipping: "Free",
         total: total.toFixed(2)
-      },
-      count: cartItems.length
+      }
     });
   } catch (error) {
-    console.error("Get cart error:", error);
+    console.error("Server error:", error);
+    
+    // Handle database-specific errors (matching other endpoints error handling)
+    if (error.code) {
+      console.log("Database error:", error);
+      return res.status(500).json({ 
+        error: "Database error", 
+        details: error.message 
+      });
+    }
+
+    // Handle general server errors
     res.status(500).json({ 
       error: "Server error", 
       details: error.message 
@@ -808,52 +1097,97 @@ app.get("/cart", authenticateToken, async (req, res) => {
   }
 });
 
+
 app.put("/cart/update", authenticateToken, async (req, res) => {
   try {
     const { productId, quantity } = req.body;
     const userId = req.user.userId;
 
     if (!productId || !quantity) {
-      return res.status(400).json({ error: "Product ID and quantity are required" });
+      return res.status(400).json({ 
+        error: "Validation error",
+        details: "Product ID and quantity are required" 
+      });
     }
 
     if (quantity <= 0) {
-      return res.status(400).json({ error: "Quantity must be greater than 0" });
+      return res.status(400).json({ 
+        error: "Validation error",
+        details: "Quantity must be greater than 0" 
+      });
     }
 
-    // Get product price to recalculate subtotal
+    // Get product price to recalculate subtotal - converted to Promise-based approach
     const productQuery = "SELECT price FROM products WHERE id = $1";
-    const productResult = await server_connect.query(productQuery, [productId]);
+    const productResult = await new Promise((resolve, reject) => {
+      server_connect.query(productQuery, [productId], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
     
     if (productResult.rows.length === 0) {
-      return res.status(404).json({ error: "Product not found" });
+      return res.status(404).json({ 
+        error: "Product not found",
+        details: `No product found with ID: ${productId}`
+      });
     }
 
     const product = productResult.rows[0];
     const subTotal = product.price * quantity;
 
-    // Update cart item
+    // Update cart item - converted to Promise-based approach
     const updateQuery = `
       UPDATE cart 
       SET quantity = $1, "subTotal" = $2 
       WHERE "userId" = $3 AND "productId" = $4
     `;
-    const result = await server_connect.query(updateQuery, [quantity, subTotal, userId, productId]);
+    const result = await new Promise((resolve, reject) => {
+      server_connect.query(updateQuery, [quantity, subTotal, userId, productId], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Cart item not found" });
+      return res.status(404).json({ 
+        error: "Cart item not found",
+        details: `No cart item found for user ${userId} and product ${productId}`
+      });
     }
+
+    console.log(`Cart updated successfully - User: ${userId}, Product: ${productId}, New quantity: ${quantity}`);
 
     res.status(200).json({ 
       message: "Cart updated successfully",
+      userId: userId,
+      productId: productId,
+      updatedCount: result.rowCount,
       updatedItem: {
         productId,
         quantity,
-        subTotal
+        subTotal: subTotal.toFixed(2)
       }
     });
   } catch (error) {
-    console.error("Update cart error:", error);
+    console.error("Server error:", error);
+    
+    // Handle database-specific errors (matching other endpoints error handling)
+    if (error.code) {
+      console.log("Database error:", error);
+      return res.status(500).json({ 
+        error: "Database error", 
+        details: error.message 
+      });
+    }
+
+    // Handle general server errors
     res.status(500).json({ 
       error: "Server error", 
       details: error.message 
@@ -866,16 +1200,46 @@ app.delete("/cart/:productId", authenticateToken, async (req, res) => {
     const { productId } = req.params;
     const userId = req.user.userId;
 
+    // Delete from cart - converted to Promise-based approach
     const deleteQuery = "DELETE FROM cart WHERE \"userId\" = $1 AND \"productId\" = $2";
-    const result = await server_connect.query(deleteQuery, [userId, productId]);
+    const result = await new Promise((resolve, reject) => {
+      server_connect.query(deleteQuery, [userId, productId], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Cart item not found" });
+      return res.status(404).json({ 
+        error: "Cart item not found",
+        details: `No cart item found for user ${userId} and product ${productId}`
+      });
     }
 
-    res.status(200).json({ message: "Item removed from cart" });
+    console.log(`Cart item deleted successfully - User: ${userId}, Product: ${productId}`);
+
+    res.status(200).json({ 
+      message: "Item removed from cart",
+      userId: userId,
+      productId: productId,
+      deletedCount: result.rowCount
+    });
   } catch (error) {
-    console.error("Remove cart item error:", error);
+    console.error("Server error:", error);
+    
+    // Handle database-specific errors (matching other endpoints error handling)
+    if (error.code) {
+      console.log("Database error:", error);
+      return res.status(500).json({ 
+        error: "Database error", 
+        details: error.message 
+      });
+    }
+
+    // Handle general server errors
     res.status(500).json({ 
       error: "Server error", 
       details: error.message 
@@ -896,16 +1260,16 @@ app.post("/test", (req, res) => {
 
 
 //Error handling Middleware
-app.use((err, req, res, next) => {
-  if (err instanceof multer.MulterError) {
-    if (err.code == "LIMIT_FILE_SIZE") {
-      return res
-        .status(400)
-        .json({ error: "File is too large, Max file size is 5MB. " });
-    }
-  }
-  res.status(500).json({ error: err.message });
-});
+// app.use((err, req, res, next) => {
+//   if (err instanceof multer.MulterError) {
+//     if (err.code == "LIMIT_FILE_SIZE") {
+//       return res
+//         .status(400)
+//         .json({ error: "File is too large, Max file size is 5MB. " });
+//     }
+//   }
+//   res.status(500).json({ error: err.message });
+// });
 const port = process.env.PORT ;
 app.listen(port, () => {
   console.log(`Server is running at port ${port}`);
