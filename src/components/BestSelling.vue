@@ -51,15 +51,15 @@ const fetchProducts = async () => {
     loading.value = true;
     error.value = null;
 
-    //Get Best Selling Products 
+    //Get Best Selling Products
 
     const data = await apiService.getBestSellingProducts();
-    products.value = data;
+    products.value = data.products || [];
 
     // Debug: Log the first product to check image URL format
-    if (data.length > 0) {
-      console.log("First product image URL:", data[0].image);
-      console.log("Full first product:", data[0]);
+    if (data.products && data.products.length > 0) {
+      console.log("First product image URL:", data.products[0].image);
+      console.log("Full first product:", data.products[0]);
     }
 
     console.log("Best Selling Products successfully loaded: ", data.length);
@@ -71,13 +71,10 @@ const fetchProducts = async () => {
   }
 };
 
-onMounted(() =>{
+onMounted(() => {
   fetchProducts();
-})
-
+});
 </script>
-
-
 
 <style scoped>
 .section-header {

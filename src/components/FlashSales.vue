@@ -81,11 +81,9 @@
         <p>No products available for flash sale.</p>
       </div>
       <div class="view-all-container">
-        <button class="view-all-btn">
-          View All Products
-        </button>
+        <button class="view-all-btn">View All Products</button>
       </div>
-      <hr style="border-color: black;"> 
+      <hr style="border-color: black" />
     </div>
   </section>
 </template>
@@ -109,12 +107,12 @@ const fetchProducts = async () => {
     //Get Flash Sales Products (products with a discount)
 
     const data = await apiService.getFlashSaleProducts();
-    products.value = data;
+    products.value = data.products || [];
 
     // Debug: Log the first product to check image URL format
-    if (data.length > 0) {
-      console.log("First product image URL:", data[0].image);
-      console.log("Full first product:", data[0]);
+    if (data.products && data.products.length > 0) {
+      console.log("First product image URL:", data.products[0].image);
+      console.log("Full first product:", data.products[0]);
     }
 
     console.log("Flash Sales Products successfully loaded: ", data.length);
@@ -274,10 +272,9 @@ onUnmounted(() => {
 });
 </script>
 <style scoped>
-
 .flash-sales {
-    margin-bottom: 100px;
-    margin-top: 130px;
+  margin-bottom: 100px;
+  margin-top: 130px;
 }
 
 .container {

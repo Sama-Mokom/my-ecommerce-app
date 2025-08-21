@@ -16,17 +16,20 @@
           </div>
         </div>
       </div>
-       <!-- Error State -->
+      <!-- Error State -->
       <div v-if="error" class="error-state">
         <p>Error Loading products: {{ error }}</p>
         <button @click="fetchProducts()" class="view-all-btn">Retry</button>
       </div>
       <!-- Display products State -->
-      <div v-else-if="products && products.length > 0" class="products-grid large-grid">
-        <ProductCard 
-        v-for="product in products"
-        :key="product.id"
-        :product="product"
+      <div
+        v-else-if="products && products.length > 0"
+        class="products-grid large-grid"
+      >
+        <ProductCard
+          v-for="product in products"
+          :key="product.id"
+          :product="product"
         />
       </div>
       <!-- No Products State -->
@@ -55,15 +58,15 @@ const fetchProducts = async () => {
     loading.value = true;
     error.value = null;
 
-    //Get Explore Products 
+    //Get Explore Products
 
     const data = await apiService.getExploreProducts();
-    products.value = data;
+    products.value = data.products || [];
 
     // Debug: Log the first product to check image URL format
-    if (data.length > 0) {
-      console.log("First product image URL:", data[0].image);
-      console.log("Full first product:", data[0]);
+    if (data.products && data.products.length > 0) {
+      console.log("First product image URL:", data.products[0].image);
+      console.log("Full first product:", data.products[0]);
     }
 
     console.log("Explore Products successfully loaded: ", data.length);
@@ -74,27 +77,24 @@ const fetchProducts = async () => {
     loading.value = false;
   }
 };
-onMounted(() =>{
+onMounted(() => {
   fetchProducts();
-})
-
-
+});
 </script>
 
 <style scoped>
-
 /* .explore-products {
   margin: 70px 0;
 } */
 .explore-products {
-    margin-right: 50px;
-    margin-left: 60px;
-    margin-bottom: 2rem;
-    margin-top: 2rem;
-    background: #fff;
-    border-radius: 10px;
-    /* margin: 2rem 0; */
-    padding: 2rem 0 3rem 0;
+  margin-right: 50px;
+  margin-left: 60px;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+  background: #fff;
+  border-radius: 10px;
+  /* margin: 2rem 0; */
+  padding: 2rem 0 3rem 0;
 }
 .container {
   max-width: 1200px;
