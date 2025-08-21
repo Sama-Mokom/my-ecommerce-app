@@ -57,15 +57,6 @@ const appRoot = path.join(__dirname, "..");
 //   fs.mkdirSync(uploadsDir, { recursive: true });
 // }
 
-const storage = multer.memoryStorage();
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB
-  },
-});
-
 //File filter which allows only image files to be uploaded
 const fileFilter = (req, file, cb) => {
   const allowedTypes = [
@@ -81,6 +72,15 @@ const fileFilter = (req, file, cb) => {
     cb(new Error("Only image files are allowed!"), false);
   }
 };
+
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
+  },
+});
 
 // const upload = multer({
 //   storage: storage,
