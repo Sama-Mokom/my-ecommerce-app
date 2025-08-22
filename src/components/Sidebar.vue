@@ -2,10 +2,10 @@
   <aside class="sidebar">
     <ul class="category-list">
       <li v-for="(cat, i) in categories" :key="i">
-        <a :href="cat.href">
+        <router-link :to="getCategoryRoute(cat)" class="category-link">
           {{ cat.name }}
           <i v-if="cat.hasArrow" class="fas fa-chevron-right"></i>
-        </a>
+        </router-link>
       </li>
     </ul>
   </aside>
@@ -16,18 +16,27 @@ const props = defineProps({
   categories: {
     type: Array,
     default: () => [
-      { name: "Woman's Fashion", href: '#', hasArrow: true },
-      { name: "Men's Fashion", href: '#', hasArrow: true },
-      { name: 'Electronics', href: '#' },
-      { name: 'Home & Lifestyle', href: '#' },
-      { name: 'Medicine', href: '#' },
-      { name: 'Sports & Outdoor', href: '#' },
-      { name: "Baby's & Toys", href: '#' },
-      { name: 'Groceries & Pets', href: '#' },
-      { name: 'Health & Beauty', href: '#' }
+      { name: "Woman's Fashion", slug: "womens-fashion", hasArrow: true },
+      { name: "Men's Fashion", slug: "mens-fashion", hasArrow: true },
+      { name: 'Clothing', slug: 'Clothing' },
+      { name: 'Electronics', slug: 'Computers' },
+      { name: 'Gaming', slug: 'Gaming' },
+      { name: 'Home & Lifestyle', slug: 'home-lifestyle' },
+      { name: 'Medicine', slug: 'medicine' },
+      { name: 'Sports & Outdoor', slug: 'Sports' },
+      { name: "Baby's & Toys", slug: "Kids" },
+      { name: 'Groceries & Pets', slug: 'Pets' },
+      { name: 'Health & Beauty', slug: 'Cosmetics' }
     ]
   }
 })
+
+const getCategoryRoute = (category) => {
+  return {
+    name: 'CategoryPage',
+    params: { categoryName: category.slug || category.name }
+  };
+};
 </script> 
 <style scoped>
 .sidebar {

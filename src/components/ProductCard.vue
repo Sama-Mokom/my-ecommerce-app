@@ -51,6 +51,7 @@ import { ref, onMounted } from 'vue';
 import apiService from '../services/api.js';
 import { authStore } from '../../stores/auth';
 import { useRouter } from 'vue-router';
+import { useToast } from 'vue-toastification';
 
 const props = defineProps({
   product: { type: Object, required: true },
@@ -58,6 +59,7 @@ const props = defineProps({
 });
 
 const router = useRouter();
+const toast = useToast();
 const isInWishlist = ref(false);
 
 const checkWishlistStatus = async () => {
@@ -74,33 +76,70 @@ const checkWishlistStatus = async () => {
 const handleToggleWishlist = async () => {
   if (!authStore.user) {
     // Redirect to login or show login modal
-    alert('Please login to add items to wishlist');
+    toast.warning('Please login to add items to wishlist', {
+      position: 'top-right',
+      timeout: 3000,
+    });
     return;
   }
 
   try {
     await apiService.toggleWishlist(props.product.id);
+    const wasInWishlist = isInWishlist.value;
     isInWishlist.value = !isInWishlist.value;
+
+    if (wasInWishlist) {
+      toast.info(`${props.product.name} removed from wishlist`, {
+        position: 'top-right',
+        timeout: 3000,
+        icon: '💔',
+      });
+    } else {
+      toast.success(`${props.product.name} added to wishlist`, {
+        position: 'top-right',
+        timeout: 3000,
+        icon: '❤️',
+      });
+    }
   } catch (error) {
     console.error('Error toggling wishlist:', error);
+    toast.error('Failed to update wishlist. Please try again.', {
+      position: 'top-right',
+      timeout: 4000,
+    });
   }
 };
 
 const handleAddToCart = async () => {
   if (!authStore.user) {
-    alert('Please login to add items to cart');
+    toast.warning('Please login to add items to cart', {
+      position: 'top-right',
+      timeout: 3000,
+    });
     router.push('/signin');
     return;
   }
 
   try {
     await apiService.addToCart(props.product.id, 1);
-    alert('Product added to cart successfully!');
+    toast.success(`${props.product.name} added to cart successfully!`, {
+      position: 'top-right',
+      timeout: 3000,
+      icon: '🛒',
+    });
   } catch (error) {
+    console.error('Error adding to cart: ', error)
     if (error.message.includes('already in your cart')) {
-      alert('This product is already in your cart');
+       toast.info(`${props.product.name} is already in your cart`, {
+        position: 'top-right',
+        timeout: 3000,
+        icon: '📦',
+      });
     } else {
-      alert('Failed to add product to cart. Please try again.');
+      toast.error('Failed to add product to cart. Please try again.', {
+        position: 'top-right',
+        timeout: 4000,
+      });
     }
     console.error('Error adding to cart:', error);
   }
@@ -126,5 +165,9 @@ onMounted(() => {
 
 .action-btn:hover {
   color: #ff4444;
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.05);
 }
 </style>

@@ -81,8 +81,10 @@ import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { authActions, authStore, isAuthenticated } from '../../stores/auth';
 import apiService from '../services/api.js';
+import { useToast } from 'vue-toastification';
 
 const router = useRouter();
+const toast = useToast();
 const props = defineProps({
 
   searchIcon: { type: String, default: "/images/search icon.png" },
@@ -169,11 +171,19 @@ const handleMenuClick = async (action) => {
       try{
         await authActions.logout();
         console.log('User logged out successfully')
-        alert('Logout Successful');
+        toast.info("Logout Successful, redirecting to home page", {
+        position: 'top-right',
+        timeout: 3000,
+        icon: '❤️',
+      });
         router.push('/');
       } catch (error){
         console.error('Logout failed: ', error)
-        alert('Logout failed. Please try again')
+        toast.error("Login Failed, Please try again later", {
+        position: 'top-right',
+        timeout: 3000,
+        icon: '❤️',
+      });
       }
       break;
   }

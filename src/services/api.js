@@ -1,4 +1,5 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://x-clusive.onrender.com";
+
+const API_BASE_URL = "http://localhost:8080" || import.meta.env.VITE_API_BASE_URL || "https://x-clusive.onrender.com";
 
 class ApiService {
   constructor() {
@@ -142,10 +143,16 @@ class ApiService {
     return this.fetchWithErrorHandling(`${API_BASE_URL}/getProducts`);
   }
 
+
+  //Get a single product by id
+   async getProductById(Id) {
+    return this.fetchWithErrorHandling(`${API_BASE_URL}/product/${Id}`);
+  }
+
   //Get products by category will be used later on when implementing various product categories
   async getProductsByCategory(category) {
     return this.fetchWithErrorHandling(
-      `${API_BASE_URL}/getProducts/${category}`
+      `${API_BASE_URL}/products/category/${category}`
     );
   }
 
@@ -436,4 +443,5 @@ export const {
   getCart,
   updateCartItem,
   removeFromCart,
+  getProductById,
 } = apiService;

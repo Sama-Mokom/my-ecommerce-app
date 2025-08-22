@@ -662,6 +662,55 @@ app.get("/getProducts/:section", async (req, res) => {
   }
 });
 
+//Endpoint to get products by category e.g 
+app.get("/products/category/:category", async (req, res) => {
+  try {
+    const category = req.params.category;
+    const params = [category];
+
+    const query = "SELECT * FROM products WHERE category = $1 ORDER BY id"
+    
+
+    // Convert database query to Promise-based approach (matching POST endpoint)
+    const result = await new Promise((resolve, reject) => {
+      server_connect.query(query, params, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+
+    console.log(`Successfully retrieved ${result.rows.length} ${category} products.`);
+    
+    res.status(200).json({
+      message: `${category} products retrieved successfully`,
+      category: category,
+      count: result.rows.length,
+      products: result.rows
+    });
+
+  } catch (error) {
+    console.error("Server error:", error);
+    
+    // Handle database-specific errors (matching POST endpoint error handling)
+    if (error.code) {
+      console.log("Database error:", error);
+      return res.status(500).json({ 
+        error: "Database error", 
+        details: error.message 
+      });
+    }
+
+    // Handle general server errors
+    res.status(500).json({ 
+      error: "Server error", 
+      details: error.message 
+    });
+  }
+});
+
 // Get single product by ID
 app.get("/product/:id", async (req, res) => {
   try {

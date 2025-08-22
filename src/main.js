@@ -6,6 +6,8 @@ import VueSplide from '@splidejs/vue-splide'
 import '@splidejs/splide/dist/css/splide.min.css'
 import router from './components/router.js'
 import { authActions } from '../stores/auth'
+import Toast from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
 
 
 const initializeApp = async () => {
@@ -21,6 +23,13 @@ const app = createApp(App)
 
 app.use(router)
 app.use(VueSplide)
+app.use(Toast, {
+  position: 'top-right',
+  timeout: 3000,
+  closeOnClick: true,
+  pauseOnFocusLoss: true,
+  pauseOnHover: true,
+});
 
 // Wait for authentication to complete before mounting
 initializeApp().then(() => {

@@ -195,19 +195,21 @@ const fetchProduct = async () => {
     
     // For now, we'll get all products and find the specific one
     // In a real app, you'd have a specific endpoint for single product
-    const response = await apiService.getAllProducts();
-    const foundProduct = response.find(p => p.id === productId);
+    const response = await apiService.getProductById(productId);
     
-    if (!foundProduct) {
+    if (!response.product) {
       error.value = 'Product not found';
       return;
     }
     
-    product.value = foundProduct;
-    selectedColor.value = foundProduct.colors?.[0] || '';
+    product.value = response.product;
+    selectedColor.value = response.product.colors?.[0] || '';
     
-    // Fetch related products (same category)
-    await fetchRelatedProducts(foundProduct.category);
+    if (product.value.category){
+        // Fetch related products (same category)
+    await fetchRelatedProducts(response.product.category);
+    }
+    
     
     // Check wishlist status
     await checkWishlistStatus();
@@ -222,12 +224,14 @@ const fetchProduct = async () => {
 
 const fetchRelatedProducts = async (category) => {
   try {
-    const response = await apiService.getAllProducts();
-    relatedProducts.value = response
-      .filter(p => p.category === category && p.id !== product.value.id)
-      .slice(0, 4); // Show only 4 related products
+    console.log('Fetching related products for category:', category);
+    const response = await apiService.getProductsByCategory(category);
+    const products = response.products || response || [];
+    relatedProducts.value = products.filter(p => p.id !== product.value.id).slice(0, 4); // Show only 4 related products
+    console.log('Related products found:', relatedProducts.value.length);
   } catch (err) {
     console.error('Error fetching related products:', err);
+    relatedProducts.value = [];;
   }
 };
 
@@ -342,6 +346,7 @@ onMounted(() => {
 
 /* Product Container */
 .product-container {
+  padding-top: 90px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 60px;

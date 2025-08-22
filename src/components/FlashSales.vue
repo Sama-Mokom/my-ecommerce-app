@@ -81,7 +81,9 @@
         <p>No products available for flash sale.</p>
       </div>
       <div class="view-all-container">
-        <button class="view-all-btn">View All Products</button>
+        <router-link to="/products"
+          ><button class="view-all-btn">All Products</button>
+        </router-link>
       </div>
       <hr style="border-color: black" />
     </div>

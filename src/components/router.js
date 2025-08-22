@@ -12,6 +12,8 @@ import Cart from "./Cart.vue";
 import CheckOut from './CheckOut.vue';
 import Account from './Account.vue';
 import ProductDetails from './ProductDetails.vue';
+import ViewAll from "./ViewAll.vue";
+import CategoryPage from "./CategoryPage.vue";
 // import SignUpv2 from "./SignUpv2.vue";
 
 
@@ -86,6 +88,17 @@ const routes = [
       component: Contact,
       name: "Contact"
     },
+    {
+  path: '/products',
+  name: 'ViewAll', 
+  component: ViewAll,
+},
+{
+  path: '/category/:categoryName',
+  name: 'CategoryPage',
+  component: CategoryPage, // The single component you'll create
+  props: true
+},
     {
       path: "/about",
       component: AboutView,

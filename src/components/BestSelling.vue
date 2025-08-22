@@ -10,7 +10,9 @@
           <div class="section-content">
             <h2>Best Selling Products</h2>
             <div class="view-all-container">
-              <button class="view-all-btn">View All Products</button>
+              <router-link to="/products"
+          ><button class="view-all-btn">View All Products</button>
+        </router-link>
             </div>
           </div>
         </div>

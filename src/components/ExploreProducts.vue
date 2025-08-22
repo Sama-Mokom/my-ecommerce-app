@@ -37,7 +37,9 @@
         <p>No products available in Explore.</p>
       </div>
       <div class="view-all-container">
-        <button class="view-all-btn">View All Products</button>
+        <router-link to="/products"
+          ><button class="view-all-btn">All Products</button>
+        </router-link>
       </div>
     </div>
   </section>

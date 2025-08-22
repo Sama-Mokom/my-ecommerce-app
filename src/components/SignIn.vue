@@ -93,8 +93,10 @@ import { ref, computed, watch, onMounted } from "vue";
 // import apiService from "../services/api";
 import { RouterLink, useRouter } from "vue-router";
 import { authActions, authStore } from "../../stores/auth";
+import { useToast } from 'vue-toastification';
 
 const router = useRouter();
+const toast = useToast();
 
 const formData = ref({
   email: "",
@@ -143,7 +145,6 @@ const togglePasswordVisibilty = () => {
 };
 
 const login = async () => {
-  //login logic will be put in here
   if (!isFormValid) {
     return;
   }
@@ -152,13 +153,21 @@ const login = async () => {
     authActions.clearError();
     const response = await authActions.login(formData.value);
     if (response) {
+      toast.success("Login Successful, redirecting to home page", {
+        position: 'top-right',
+        timeout: 3000,
+        icon: '❤️',
+      });
       console.log("Login sucessful, redirecting to homepage");
-      alert("Login sucessful. Redirecting to home page");
       router.push({ name: "HomeView" });
     }
   } catch (err) {
     console.error("Login error: ", err);
-    alert(`Login failed: ${err.message}`);
+    toast.error(`Login failed: ${err.message}`, {
+      position: 'top-right',
+        timeout: 3000,
+        icon: '💔',
+    });
   }
 };
 

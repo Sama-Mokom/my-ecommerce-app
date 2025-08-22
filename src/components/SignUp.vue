@@ -131,10 +131,12 @@ import { ref, computed, watch, onMounted } from "vue";
 // import apiService from "../services/api";
 import { RouterLink, useRouter } from "vue-router";
 import { authActions, authStore, isAuthenticated } from "../../stores/auth";
+import { useToast } from 'vue-toastification';
 
 // import axios from "axios";
 
 const router = useRouter();
+const toast = useToast();
 
 const formData = ref({
   name: "",
@@ -193,13 +195,21 @@ const signUp = async () => {
     authActions.clearError();
     const response = await authActions.register(formData.value);
     if (response) {
+      toast.success("Signup Successful, redirecting to home page", {
+        position: 'top-right',
+        timeout: 3000,
+        icon: '❤️',
+      });
       console.log("Signup sucessful, redirecting to homepage");
-      alert("Signup sucessful. Redirecting to home page");
       router.push({ name: "HomeView" });
     }
   } catch (err) {
     console.error("Registration error: ", err);
-    alert(`Signupfailed: ${err.message}`);
+    toast.error(`Signup failed: ${err.message}`, {
+      position: 'top-right',
+        timeout: 3000,
+        icon: '💔',
+    });
   }
 };
 
