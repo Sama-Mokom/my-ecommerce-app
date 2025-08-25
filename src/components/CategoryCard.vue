@@ -8,6 +8,7 @@
 <script setup>
 const props = defineProps({
   icon: { type: String, required: true },
-  label: { type: String, required: true }
+  label: { type: String, required: true },
+  slug: { type: String, required: true }
 })
 </script> 

@@ -225,5 +225,84 @@ const appLinks = ref([
   opacity: 0.6;
 }
 
-
+/* Tablet styles (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .footer-content {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+  }
+  
+  .app-row {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+/* Mobile styles (max-width: 768px) */
+@media (max-width: 768px) {
+  .footer {
+    padding: 60px 0 20px;
+  }
+  
+  .footer-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+  
+  .footer-column h3,
+  .footer-column h4 {
+    font-size: 18px;
+    margin-bottom: 18px;
+  }
+    .social-links {
+    gap: 18px;
+  }
+  
+  .social-links a {
+    font-size: 20px;
+  }
+}
+/* Small mobile styles (max-width: 480px) */
+@media (max-width: 480px) {
+  .footer {
+    padding: 40px 0 15px;
+  }
+  
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    margin-bottom: 40px;
+  }
+  
+  .footer-column {
+    text-align: center;
+  }
+    .newsletter {
+    justify-content: center;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .app-row {
+    align-items: center;
+  }
+  
+  .app-links {
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+  }
+   .app-links img {
+    width: 100px;
+    height: 35px;
+  }
+  
+  .social-links {
+    justify-content: center;
+  }
+  
+  .footer-bottom p {
+    font-size: 14px;
+  }
+}
 </style>

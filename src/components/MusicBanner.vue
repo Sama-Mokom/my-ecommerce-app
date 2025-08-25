@@ -267,86 +267,120 @@ button:focus, input:focus {
     outline-offset: 2px;
 }
 
-/* .music-banner {
-    margin: 140px 0;
+/* Tablet styles (max-width: 900px) */
+@media (max-width: 900px) {
+  .music-banner {
+    margin-left: 20px;
+    width: calc(100vw - 40px);
+    padding: 20px;
+  }
+  
+  .music-banner__title {
+    font-size: 2.8rem;
+  }
+   
+  .music-banner__timer {
+    gap: 1.5rem;
+  }
+  
+  .music-banner__timer-item {
+    width: 55px;
+    height: 55px;
+  }
+    .image-background {
+    width: 500px;
+    height: 380px;
+  }
 }
 
-.banner-content {
-    background: #000;
-    border-radius: 4px;
-    padding: 69px 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    color: #fff;
-}
-
-.banner-text {
-    flex: 1;
-}
-
-.banner-label {
-    color: #00ff66;
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 32px;
-    display: block;
-}
-
-.banner-content h2 {
-    font-size: 48px;
-    font-weight: 600;
-    line-height: 60px;
-    margin-bottom: 32px;
-}
-
-.countdown-circles {
-    display: flex;
-    gap: 24px;
-    margin-bottom: 40px;
-}
-
-.circle {
-    width: 62px;
-    height: 62px;
-    background: #fff;
-    border-radius: 50%;
-    display: flex;
+/* Mobile styles (max-width: 600px) */
+@media (max-width: 600px) {
+  .music-banner {
+    margin-left: 10px;
+    width: calc(100vw - 20px);
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+   .music-banner__container {
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: #000;
-}
-
-.circle .number {
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 20px;
-}
-
-.circle .label {
-    font-size: 11px;
-    font-weight: 400;
-}
-
-.buy-now-btn {
-    background: #00ff66;
-    color: #fff;
-    border: none;
-    padding: 16px 48px;
-    border-radius: 4px;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.banner-image {
-    flex: 1;
-    text-align: center;
-}
-
-.banner-image img {
+  }
+  
+  .music-banner__content {
     max-width: 100%;
-    height: auto;
-} */
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .music-banner__category {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .music-banner__title {
+    font-size: 2.2rem;
+    margin-bottom: 1.5rem;
+  }
+  .music-banner__timer {
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .music-banner__timer-item {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+   .music-banner__timer-value {
+    font-size: 16px;
+  }
+  
+  .music-banner__timer-label {
+    font-size: 10px;
+  }
+  
+  .music-banner__button {
+    padding: 0.8rem 2rem;
+    font-size: 1.2rem;
+  }
+   .music-banner__image-wrapper {
+    width: 100%;
+  }
+  
+  .image-background {
+    width: 100%;
+    max-width: 350px;
+    height: 280px;
+  }
+  
+  .music-banner__image {
+    max-width: 280px;
+  }
+}
+/* Small mobile styles (max-width: 400px) */
+@media (max-width: 400px) {
+  .music-banner__title {
+    font-size: 1.8rem;
+  }
+  
+  .music-banner__timer {
+    gap: 0.7rem;
+  }
+  
+  .music-banner__timer-item {
+    width: 45px;
+    height: 45px;
+  }
+   .music-banner__button {
+    padding: 0.7rem 1.8rem;
+    font-size: 1.1rem;
+  }
+  
+  .image-background {
+    height: 240px;
+  }
+  
+  .music-banner__image {
+    max-width: 240px;
+  }
+}
 </style>

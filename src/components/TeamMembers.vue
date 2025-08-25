@@ -201,4 +201,53 @@ onUnmounted(() => {
     font-size: 28px;
   }
 }
+/* Tablet styles (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .team-members-container {
+    padding: 60px 0;
+  }
+  
+  .splide__slide {
+    padding: 0 10px;
+  }
+}
+/* Mobile styles (max-width: 768px) */
+@media (max-width: 768px) {
+  .team-members-container {
+    padding: 40px 0;
+  }
+  
+  .container {
+    padding: 0 15px;
+  }
+  
+  .splide {
+    margin-bottom: 30px;
+  }
+   .carousel-dots {
+    margin-top: 30px;
+  }
+}
+/* Small mobile styles (max-width: 480px) */
+@media (max-width: 480px) {
+  .team-members-container {
+    padding: 30px 0;
+  }
+  
+  .container {
+    padding: 0 10px;
+  }
+  
+  .splide__slide {
+    padding: 0 5px;
+  }
+   .carousel-dots {
+    margin-top: 25px;
+  }
+  
+  .dot {
+    width: 10px;
+    height: 10px;
+  }
+}
 </style>

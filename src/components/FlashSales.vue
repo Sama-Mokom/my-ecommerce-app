@@ -323,11 +323,305 @@ onUnmounted(() => {
   margin-right: 390px;
 }
 
+
+.time-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.time-unit .label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #000;
+  margin-bottom: 4px;
+}
+
+.time-unit .value {
+  font-size: 32px;
+  font-weight: 600;
+  color: #000;
+}
+
+.separator {
+  font-size: 32px;
+  font-weight: 600;
+  color: #e74c3c;
+  margin: 0 5px;
+  align-self: flex-end;
+  padding-bottom: 6px;
+}
+
+.nav-arrows {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-arrow {
+  background: #f5f5f5;
+  border: none;
+  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-arrow:hover:not(:disabled) {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.nav-arrow:disabled {
+  background: #eee;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
 .view-all-container {
   text-align: center;
   display: flex;
   justify-content: center;
   margin-top: 2rem;
   margin-bottom: 3rem;
+}
+
+.view-all-btn {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 16px 48px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.view-all-btn:hover {
+  background: #c0392b;
+}
+
+.loading-state,
+.error-state,
+.no-products {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+/* Tablet Styles */
+@media (max-width: 1024px) {
+  .flash-sales {
+    margin-top: 80px;
+    margin-bottom: 60px;
+  }
+  
+  .container {
+    margin-right: 30px;
+    margin-left: 50px;
+    padding: 0 15px;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  
+  .section-content {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .section-content h2 {
+    font-size: 28px;
+    margin-right: 20px;
+    white-space: normal;
+  }
+  
+  .countdown {
+    margin-left: 0;
+    margin-right: 0;
+    gap: 12px;
+  }
+  
+  .time-unit .value {
+    font-size: 24px;
+  }
+  
+  .separator {
+    font-size: 24px;
+    padding-bottom: 4px;
+  }
+  
+  .nav-arrows {
+    margin-left: auto;
+  }
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .flash-sales {
+    margin-top: 60px;
+    margin-bottom: 40px;
+  }
+  
+  .container {
+    margin-right: 20px;
+    margin-left: 20px;
+    padding: 0 10px;
+  }
+  
+  .section-header {
+    margin-bottom: 20px;
+  }
+  
+  .section-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .section-content h2 {
+    font-size: 24px;
+    margin-right: 0;
+  }
+  
+  .countdown {
+    gap: 10px;
+    align-self: stretch;
+    justify-content: center;
+  }
+  
+  .time-unit .label {
+    font-size: 10px;
+  }
+  
+  .time-unit .value {
+    font-size: 20px;
+  }
+  
+  .separator {
+    font-size: 20px;
+    margin: 0 3px;
+    padding-bottom: 3px;
+  }
+  
+  .nav-arrows {
+    display: none; /* Hide navigation arrows on mobile */
+  }
+  
+  .nav-arrow {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .view-all-btn {
+    padding: 12px 32px;
+    font-size: 14px;
+  }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+  .flash-sales {
+    margin-top: 40px;
+    margin-bottom: 30px;
+  }
+  
+  .container {
+    margin-right: 15px;
+    margin-left: 15px;
+    padding: 0 5px;
+  }
+  
+  .section-content h2 {
+    font-size: 20px;
+  }
+  
+  .countdown {
+    gap: 8px;
+  }
+  
+  .time-unit .label {
+    font-size: 9px;
+  }
+  
+  .time-unit .value {
+    font-size: 18px;
+  }
+  
+  .separator {
+    font-size: 18px;
+    margin: 0 2px;
+  }
+  
+  .view-all-container {
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .view-all-btn {
+    padding: 10px 24px;
+    font-size: 13px;
+  }
+}
+
+/* Red bar responsive */
+@media (max-width: 768px) {
+  .red-bar {
+    width: 16px;
+    height: 32px;
+  }
+  
+  .section-label {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .red-bar {
+    width: 14px;
+    height: 28px;
+  }
+  
+  .section-label {
+    font-size: 13px;
+  }
+}
+
+/* Error and Loading States */
+@media (max-width: 768px) {
+  .loading-state,
+  .error-state,
+  .no-products {
+    padding: 30px 15px;
+  }
+  
+  .loading-state p,
+  .error-state p,
+  .no-products p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .loading-state,
+  .error-state,
+  .no-products {
+    padding: 20px 10px;
+  }
+  
+  .loading-state p,
+  .error-state p,
+  .no-products p {
+    font-size: 13px;
+  }
 }
 </style>

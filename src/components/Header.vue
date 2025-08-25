@@ -463,4 +463,102 @@ onUnmounted(() => {
     min-width: 180px;
   }
 }
+/* Tablet styles (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .logo {
+    margin-left: 30px;
+  }
+  
+  .nav {
+    margin-left: 30px;
+    gap: 20px;
+  }
+  
+  .header-actions {
+    margin-right: 20px;
+    gap: 18px;
+  }
+   .search-box input {
+    width: 150px;
+  }
+}
+
+/* Mobile styles (max-width: 768px) */
+@media (max-width: 768px) {
+  .header .container {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+  .logo {
+    margin-left: 0;
+    order: 1;
+    flex: 1;
+    text-align: center;
+  }
+  
+  .nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    margin: 15px 0 0 0;
+    gap: 15px;
+  }
+   .header-actions {
+    order: 2;
+    margin-right: 0;
+    gap: 15px;
+  }
+  
+  .search-box {
+    display: none;
+  }
+  .dropdown-menu {
+    right: -50px;
+    min-width: 180px;
+  }
+}
+/* Small mobile styles (max-width: 480px) */
+@media (max-width: 480px) {
+  .header {
+    padding: 12px 0;
+  }
+  
+  .logo h2 {
+    font-size: 20px;
+  }
+  
+  .nav {
+    gap: 10px;
+    font-size: 14px;
+  }
+   .header-actions {
+    gap: 12px;
+  }
+  
+  .header-icons i {
+    font-size: 18px;
+    height: 32px;
+    width: 30px;
+  }
+  
+  .wishlist-count,
+  .cart-count {
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
+  }
+  .dropdown-menu {
+    right: -30px;
+    min-width: 160px;
+  }
+  
+  .dropdown-item {
+    padding: 10px 12px;
+  }
+  
+  .dropdown-item span {
+    font-size: 13px;
+  }
+}
 </style>

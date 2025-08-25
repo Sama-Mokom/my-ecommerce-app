@@ -64,17 +64,7 @@ const perfume = computed(() => arrivals.filter((a) => a.type === "perfume"));
             id="play-station"
             :src="item.image"
             :alt="item.alt"
-            style="
-              transform: translate(-50%, -50%);
-              margin: auto;
-              max-height: 100%;
-              max-width: 100%;
-              display: block;
-              object-fit: cover;
-              position: absolute;
-              top: 50%;
-              left: 50%;
-            "
+            class="arrival-image"
           />
           <div class="arrival-text">
             <h3>{{ item.title }}</h3>
@@ -89,16 +79,7 @@ const perfume = computed(() => arrivals.filter((a) => a.type === "perfume"));
           <img
             :src="item.image"
             :alt="item.alt"
-            style="
-              width: 432px;
-              margin-left: 120px;
-              height: 286px;
-              /* left: 186px; */
-              transform: translateY(180deg);
-              position: absolute;
-              top: 0;
-              object-fit: cover;
-            "
+            class="arrival-image women-image"
           />
           <div class="arrival-text">
             <h3>{{ item.title }}</h3>
@@ -118,19 +99,7 @@ const perfume = computed(() => arrivals.filter((a) => a.type === "perfume"));
             <img
               :src="item.image"
               :alt="item.alt"
-              style="
-                transform: translate(-50%, -50%);
-                margin: auto;
-                max-height: 100%;
-                max-width: 100%;
-                display: block;
-                width: 190px;
-                height: 221px;
-                object-fit: cover;
-                position: absolute;
-                top: 50%;
-                left: 50%;
-              "
+              class="arrival-image speakers-image"
             />
             <div class="arrival-text">
               <h3>{{ item.title }}</h3>
@@ -148,19 +117,7 @@ const perfume = computed(() => arrivals.filter((a) => a.type === "perfume"));
             <img
               :src="item.image"
               :alt="item.alt"
-              style="
-                transform: translate(-50%, -50%);
-                margin: auto;
-                max-height: 100%;
-                max-width: 100%;
-                display: block;
-                width: 201px;
-                height: 203px;
-                object-fit: cover;
-                position: absolute;
-                top: 50%;
-                left: 50%;
-              "
+              class="arrival-image perfume-image"
             />
             <div class="arrival-text">
               <h3>{{ item.title }}</h3>
@@ -260,19 +217,45 @@ body {
   align-items: flex-end;
   color: #fff;
 }
-
-
-.arrival-content img {
+.arrival-image {
   position: absolute;
   top: 0;
-  /* left: 186px; */
-  width: 432px;
-  height: 286px;
+  left: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+}
+.women-image {
+  transform: translateX(25%);
+}
+.speakers-image, .perfume-image {
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  max-height: 80%;
+  max-width: 80%;
+  width: auto;
+  height: auto;
+}
+.arrival-content#PS5 {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 }
 
 
-.arrival-content[data-v-46d46e45][data-v-46d46e45] {
+/* .arrival-content img {
+  position: absolute;
+  top: 0;
+  /* left: 186px; */
+  /* width: 432px;
+  height: 286px;
+  object-fit: cover;
+} */
+
+
+/* .arrival-content[data-v-46d46e45][data-v-46d46e45] {
   overflow: hidden;
   position: relative;
   height: 288px;
@@ -286,9 +269,9 @@ body {
   height: 511px;
   top: 89px;
   left: 29px;
-}
+} */
 /* Ensure generic .arrival-content img does not override the above */
-.arrival-content
+/* .arrival-content
   img:not(#PS5):not(#womens-collections):not(#echo):not(#perfume) {
   width: 100%;
   height: 100%;
@@ -296,7 +279,7 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-}
+} */ 
 
 .arrival-text {
   position: relative;
@@ -321,5 +304,165 @@ body {
   text-decoration: none;
   border-bottom: 1px solid #fff;
   padding-bottom: 4px;
+}
+/* Tablet styles (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .new-arrival {
+    margin: 100px 0;
+    padding: 20px;
+    width: 95vw;
+  }
+  
+  .arrival-grid {
+    height: 500px;
+    gap: 20px;
+    margin-top: 50px;
+  }
+  .arrival-text {
+    padding: 24px;
+  }
+  
+  .arrival-text h3 {
+    font-size: 20px;
+  }
+  
+  .women-image {
+    transform: translateX(15%);
+  }
+}
+/* Medium tablet styles (max-width: 768px) */
+@media (max-width: 768px) {
+  .new-arrival {
+    margin: 80px 0;
+    padding: 15px;
+  }
+  
+  .arrival-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+    gap: 20px;
+    margin-top: 40px;
+  }
+   .arrival-item.large {
+    grid-row: span 1;
+    height: 400px;
+  }
+  
+  .arrival-row {
+    flex-direction: column;
+  }
+  
+  .arrival-item.small {
+    height: 250px;
+  }
+  .arrival-text {
+    padding: 20px;
+  }
+  
+  .arrival-text h3 {
+    font-size: 18px;
+  }
+  
+  .arrival-text p {
+    font-size: 13px;
+  }
+   .women-image {
+    transform: translateX(10%);
+    width: 80%;
+    height: auto;
+    left: 0;
+  }
+}
+/* Mobile styles (max-width: 480px) */
+@media (max-width: 480px) {
+  .new-arrival {
+    margin: 60px 0;
+    padding: 10px;
+    width: 100vw;
+  }
+  
+  .section-header {
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+  .section-title {
+    text-align: center;
+    font-size: 24px;
+  }
+  
+  .arrival-grid {
+    gap: 15px;
+    margin-top: 30px;
+  }
+  
+  .arrival-item.large {
+    height: 350px;
+  }
+  .arrival-item.medium {
+    height: 250px;
+  }
+  
+  .arrival-item.small {
+    height: 200px;
+  }
+  
+  .arrival-text {
+    padding: 15px;
+  }
+   .arrival-text h3 {
+    font-size: 16px;
+  }
+  
+  .arrival-text p {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .shop-link {
+    font-size: 14px;
+  }
+   .women-image {
+    transform: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .speakers-image, .perfume-image {
+    max-height: 70%;
+    max-width: 70%;
+  }
+}
+/* Small mobile styles (max-width: 360px) */
+@media (max-width: 360px) {
+  .new-arrival {
+    margin: 40px 0;
+  }
+  
+  .arrival-item.large {
+    height: 300px;
+  }
+  
+  .arrival-item.medium {
+    height: 220px;
+  }
+   .arrival-item.small {
+    height: 180px;
+  }
+  
+  .arrival-text {
+    padding: 12px;
+  }
+  
+  .arrival-text h3 {
+    font-size: 15px;
+  }
+  
+  .arrival-text p {
+    font-size: 11px;
+  }
+   .shop-link {
+    font-size: 13px;
+  }
 }
 </style>
