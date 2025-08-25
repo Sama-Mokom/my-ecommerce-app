@@ -180,17 +180,27 @@ watch(
     }
   }
 );
+// if (formData.value.password && formData.value.password.length < 8) {
+//       passwordError.value = "Password must be at least 8 characters long";
+//       toast.info("Password must be at least 8 characters long", {
+//         position: 'top-right',
+//         timeout: 3000,
+//         icon: '💔',
+//       });
+//       return;
+//     } 
 
 // Methods
 const togglePasswordVisibilty = () => {
   showPassword.value = !showPassword.value;
 };
 
+
+
 const signUp = async () => {
   if (!isFormValid) {
     return;
   }
-
   try {
     authActions.clearError();
     const response = await authActions.register(formData.value);

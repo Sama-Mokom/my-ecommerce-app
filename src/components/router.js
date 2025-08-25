@@ -14,6 +14,7 @@ import Account from './Account.vue';
 import ProductDetails from './ProductDetails.vue';
 import ViewAll from "./ViewAll.vue";
 import CategoryPage from "./CategoryPage.vue";
+import AddProduct from "./AddProduct.vue";
 // import SignUpv2 from "./SignUpv2.vue";
 
 
@@ -54,6 +55,14 @@ const routes = [
         requiresAuth: true
       }
     },
+     {
+      path: "/add-product",
+      component: AddProduct,
+      name: "AddProduct",
+      meta: {
+        requiresAuth: true
+      }
+    },
     {
       path: "/cart",
       component: Cart,
@@ -73,7 +82,7 @@ const routes = [
     // Protected routes which will be used later on
     {
       path: "/account",
-      component: Account, //account component to be built later
+      component: Account, 
       name: "Account",
       meta: {requiresAuth: true}
     },
@@ -96,7 +105,7 @@ const routes = [
 {
   path: '/category/:categoryName',
   name: 'CategoryPage',
-  component: CategoryPage, // The single component you'll create
+  component: CategoryPage, 
   props: true
 },
     {
