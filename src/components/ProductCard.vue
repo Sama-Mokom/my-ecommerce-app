@@ -3,7 +3,7 @@
     <div class="product-image">
       <span v-if="product.discount" class="discount-badge">{{
         product.discount
-      }}</span>
+      }}%</span>
       <span v-if="product.isNew" class="new-badge">NEW</span>
       <img :src="product.image" :alt="product.name" />
       <div class="product-actions">

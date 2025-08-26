@@ -347,12 +347,14 @@ button:focus, input:focus {
   }
   
   .image-background {
+    display:none;
     width: 100%;
     max-width: 350px;
     height: 280px;
   }
   
   .music-banner__image {
+    display:none;
     max-width: 280px;
   }
 }

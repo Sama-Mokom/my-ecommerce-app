@@ -25,7 +25,8 @@ const props = defineProps({
       { name: 'Medicine', slug: 'medicine' },
       { name: 'Sports & Outdoor', slug: 'Sports' },
       { name: "Baby's & Toys", slug: "Kids" },
-      { name: 'Groceries & Pets', slug: 'Pets' },
+      { name: 'Pets', slug: 'Pets' },
+      { name: 'Groceries', slug: 'Groceries' },
       { name: 'Health & Beauty', slug: 'Cosmetics' }
     ]
   }

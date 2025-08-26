@@ -87,7 +87,7 @@
                 v-model="productData.discount"
                 type="number"
                 min="0"
-                max="100"
+                max="90"
                 placeholder="0"
                 class="form-input"
               />
@@ -100,7 +100,7 @@
                 id="product-rating"
                 v-model="productData.rating"
                 type="number"
-                step="0.1"
+                step="1"
                 min="0"
                 max="5"
                 placeholder="4.5"
@@ -235,13 +235,13 @@ const successMessage = ref('');
 const availableColors = ['#000000', '#FF0000', '#0000FF', '#00FF00', '#FFFF00', '#FF00FF', '#00FFFF', '#FFFFFF'];
 
 const availableCategories = [
-  { value: 'electronics', label: 'Electronics', icon: 'fas fa-laptop' },
-  { value: 'clothing', label: 'Clothing', icon: 'fas fa-tshirt' },
-  { value: 'home', label: 'Home & Kitchen', icon: 'fas fa-home' },
-  { value: 'beauty', label: 'Beauty', icon: 'fas fa-spa' },
-  { value: 'sports', label: 'Sports', icon: 'fas fa-basketball-ball' },
-  { value: 'books', label: 'Books', icon: 'fas fa-book' },
-  { value: 'toys', label: 'Toys', icon: 'fas fa-gamepad' },
+  { value: 'Electronics', label: 'Electronics', icon: 'fas fa-laptop' },
+  { value: 'Clothing', label: 'Clothing', icon: 'fas fa-tshirt' },
+  { value: 'Furniture', label: 'Home & Kitchen', icon: 'fas fa-home' },
+  { value: 'Cosmetics', label: 'Beauty', icon: 'fas fa-spa' },
+  { value: 'Sports', label: 'Sports', icon: 'fas fa-basketball-ball' },
+  { value: 'Books', label: 'Books', icon: 'fas fa-book' },
+  { value: 'Kids', label: 'Toys', icon: 'fas fa-gamepad' },
   { value: 'jewelry', label: 'Jewelry', icon: 'fas fa-gem' }
 ];
 

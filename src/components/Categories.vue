@@ -51,12 +51,12 @@ const props = defineProps({
   categories: {
     type: Array,
     default: () => [
-      { icon: Phones,label: "Phones", slug: "Phones"  },
+      { icon: Phones, label: "Phones", slug: "Phones"  },
       { icon: Computers, label: "Computers", slug: "Computers" },
       { icon: SmartWatch, label: "SmartWatch", slug: "Smartwatch"},
       { icon: Camera, label: "Camera", slug: "Camera"  },
       { icon: HeadPhones, label: "HeadPhones", slug: "Headphones" },
-      { icon: Gaming,label: "Gaming", slug: "Gaming" },
+      { icon: Gaming, label: "Gaming", slug: "Gaming" },
     ]
   }
 })
