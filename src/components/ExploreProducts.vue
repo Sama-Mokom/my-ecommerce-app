@@ -27,7 +27,7 @@
         class="products-grid large-grid"
       >
         <ProductCard
-          v-for="product in products"
+          v-for="product in limitedProducts"
           :key="product.id"
           :product="product"
         />
@@ -48,11 +48,16 @@
 <script setup>
 import ProductCard from "./ProductCard.vue";
 import apiService from "../services/api.js";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 
 const products = ref([]);
 const loading = ref(true);
 const error = ref(null);
+
+// Computed property to make sure just 8 products are displayed at a time in the home page
+const limitedProducts = computed(() => {
+  return products.value.slice(0, 8);
+});
 
 // Fetch products from API
 const fetchProducts = async () => {
@@ -63,7 +68,9 @@ const fetchProducts = async () => {
     //Get Explore Products
 
     const data = await apiService.getExploreProducts();
-    products.value = data.products || [];
+
+    //Limit to a maximum of 8 products
+    products.value = (data.products || []).slice(0, 8);
 
     // Debug: Log the first product to check image URL format
     if (data.products && data.products.length > 0) {
@@ -325,6 +332,13 @@ onMounted(() => {
 }
 .view-all-btn:hover {
   background: #c0392b;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.1rem;
+  color: #666;
 }
 
 /* Tablet Styles */
