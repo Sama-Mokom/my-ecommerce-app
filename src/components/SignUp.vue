@@ -52,6 +52,7 @@
                 placeholder="Password"
                 autocomplete="password"
                 class="form-input"
+                :class="{ 'input-error': passwordError }"
               />
               <button
                 type="button"
@@ -63,6 +64,11 @@
                   :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
                 ></i>
               </button>
+              <!-- Individual password error display -->
+              <div v-if="passwordError" class="field-error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ passwordError }}
+              </div>
             </div>
             <!-- Error Display -->
             <div v-if="authStore.error" class="error-message">
@@ -131,7 +137,7 @@ import { ref, computed, watch, onMounted } from "vue";
 // import apiService from "../services/api";
 import { RouterLink, useRouter } from "vue-router";
 import { authActions, authStore, isAuthenticated } from "../../stores/auth";
-import { useToast } from 'vue-toastification';
+import { useToast } from "vue-toastification";
 
 // import axios from "axios";
 
@@ -188,27 +194,54 @@ watch(
 //         icon: '💔',
 //       });
 //       return;
-//     } 
+//     }
 
 // Methods
 const togglePasswordVisibilty = () => {
   showPassword.value = !showPassword.value;
 };
 
-
-
 const signUp = async () => {
-  if (!isFormValid) {
+  if (formData.value.password && formData.value.password.length < 8) {
+    toast.error("Password must be at least 8 characters long", {
+      position: "top-right",
+      timeout: 3000,
+      icon: "🔒",
+    });
     return;
   }
+
+  if (!isFormValid) {
+    if (!formData.value.name.trim()) {
+      toast.error("Please enter your full name", {
+        position: "top-right",
+        timeout: 3000,
+        icon: "👤",
+      });
+    } else if (!formData.value.email.trim()) {
+      toast.error("Please enter your email address", {
+        position: "top-right",
+        timeout: 3000,
+        icon: "📧",
+      });
+    } else if (emailError.value) {
+      toast.error(emailError.value, {
+        position: "top-right",
+        timeout: 3000,
+        icon: "📧",
+      });
+    }
+    return;
+  }
+
   try {
     authActions.clearError();
     const response = await authActions.register(formData.value);
     if (response) {
       toast.success("Signup Successful, redirecting to home page", {
-        position: 'top-right',
+        position: "top-right",
         timeout: 3000,
-        icon: '❤️',
+        icon: "❤️",
       });
       console.log("Signup sucessful, redirecting to homepage");
       router.push({ name: "HomeView" });
@@ -216,16 +249,21 @@ const signUp = async () => {
   } catch (err) {
     console.error("Registration error: ", err);
     toast.error(`Signup failed: ${err.message}`, {
-      position: 'top-right',
-        timeout: 3000,
-        icon: '💔',
+      position: "top-right",
+      timeout: 3000,
+      icon: "💔",
     });
   }
 };
 
 const signUpWithGoogle = () => {
   console.log("Sign up with Google clicked");
-  // Handle Google sign up logic here
+  toast.info("SignUp with Google is currently unavailable", {
+        position: 'top-right',
+        timeout: 3000,
+        icon: '💔',
+      });
+  // Handle Google sign up logic here once I've succeded to get the google API😂🤷‍♂️
 };
 
 // const goToLogin = () => {
@@ -332,6 +370,25 @@ onMounted(() => {
 
 .input-group {
   position: relative;
+  min-height: 60px;
+}
+.input-success {
+  border-bottom-color: #28a745 !important;
+}
+.input-error {
+  border-bottom-color: #db4444 !important;
+}
+
+.field-error-message {
+  color: #db4444;
+  font-size: 14px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.field-error-message i {
+  font-size: 12px;
 }
 
 .form-input {
@@ -369,6 +426,9 @@ onMounted(() => {
 .form-input::placeholder {
   color: #999999;
   font-weight: 400;
+}
+.form-input:valid:not(:placeholder-shown) {
+  border-bottom-color: #28a745;
 }
 
 .create-account-btn {

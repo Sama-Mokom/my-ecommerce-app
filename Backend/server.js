@@ -2,8 +2,6 @@ import { Client } from "pg";
 import express from "express";
 import multer from "multer";
 import path from "path";
-import { fileURLToPath } from "url";
-import fs from "fs";
 import cors from "cors";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
@@ -24,9 +22,6 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const app = express();
 
 app.use(
@@ -46,18 +41,9 @@ app.use(
 app.use(cookieParser()); 
 app.use(express.json());
 
-//  Create a directory called uploads in the public folder
-const appRoot = path.join(__dirname, "..");
 
-//serves the static files, in this case images
-// app.use("/uploads", express.static(path.join(appRoot, "public/uploads")));
 
-// const uploadsDir = path.join(appRoot, "public/uploads/products");
-// if (!fs.existsSync(uploadsDir)) {
-//   fs.mkdirSync(uploadsDir, { recursive: true });
-// }
-
-//File filter which allows only image files to be uploaded
+//File filter which allows only image files to be uploaded cuz human beings do not know how to follow instructions🤦‍♂️
 const fileFilter = (req, file, cb) => {
   const allowedTypes = [
     "image/jpeg",
@@ -78,19 +64,13 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB
+    fileSize: 10 * 1024 * 1024, // 10MB minimum uplaod size for files
   },
 });
 
-// const upload = multer({
-//   storage: storage,
-//   fileFilter: fileFilter,
-//   limits: {
-//     fileSize: 10 * 1024 * 1024, // 10MB limit to the files which can be uploaded
-//   },
-// });
 
 const server_connect = new Client({
+  //Use environment variables for the database connection configuration
   host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "postgres",
   port: process.env.DB_PORT || 5432,
@@ -114,7 +94,7 @@ app.post("/postUser", async (req, res) => {
     console.log("=== POST /postUser Debug Info ===");
     console.log("Request body: ", req.body);
 
-    // Check if req.body exists at all
+    // Check if req.body exists at all wrote this check for debugging purposes
     if (!req.body) {
       console.log("ERROR: req.body is null or undefined");
       return res.status(400).json({
@@ -143,6 +123,7 @@ app.post("/postUser", async (req, res) => {
     const email = req.body.email || null;
     const password = req.body.password || null;
 
+    //Display the user info in the console for debugging
     console.log("Values extracted from body: ", {
       name,
       email,
@@ -162,13 +143,13 @@ app.post("/postUser", async (req, res) => {
           actualValues: {
             name: req.body.name,
             email: req.body.email,
-            password: req.body.password ? "***provided***" : "missing",
+            password: req.body.password ? "***provided***" : "missing", //Do not display actual password provided by user
           },
         }
       );
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; //Regular expression which we will compare the user email to for email validation
     if (!emailRegex.test(email)) {
       return res.status(400).json({
         error: "Invalid email format",
@@ -193,7 +174,7 @@ app.post("/postUser", async (req, res) => {
     }
 
     //Hash Passwords before saving in database
-    const saltRounds = 10;
+    const saltRounds = 10; //The number of times the password will be hased. A higher saltround gives more security but also costs more time
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     const userId = uuidv4();
 
@@ -202,11 +183,11 @@ app.post("/postUser", async (req, res) => {
 
     const result = await server_connect.query(
       insert_query,
-      [userId, name, email, hashedPassword]
+      [userId, name, email, hashedPassword] //Insert hashed password into database
     );
     console.log("User created successfully: ", result);
 
-    // Generate JWT Tokens
+    // Generate JWT Tokens only after the user has been successfully created and saved in the database
     const tokenPayload = { userId, email, name };
     const { accessToken, refreshToken } = generateTokens(tokenPayload);
 
@@ -225,9 +206,10 @@ app.post("/postUser", async (req, res) => {
       message: "User created successfully",
       accessToken: accessToken,
       user: {
+        //Do not send back sensitive data such as password in the response
         id: userId,
         name: name,
-        email: email,
+        email: email, 
       },
     });
   } catch (error) {
@@ -266,28 +248,28 @@ app.post("/loginUser", async (req, res) => {
       });
     }
 
-    // Find user by email
+    // Query the database to find user by email
     const findUserQuery = "SELECT * FROM users WHERE email = $1";
     const userResult = await server_connect.query(findUserQuery, [email]);
 
     if (userResult.rows.length === 0) {
       return res.status(401).json({
-        error: "Invalid email or password",
+        error: "Invalid email",
       });
     }
 
     const user = userResult.rows[0];
 
-    // Compare passwords
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    // Compare password that the user provides upon login with password already stored in Database
+    const isPasswordValid = await bcrypt.compare(password, user.password); //Returns a boolean value. Hashes the password provided by the user logging in and compares it to the already hashed password in the database
 
     if (!isPasswordValid) {
       return res.status(401).json({
-        error: "Invalid email or password",
+        error: "Invalid password",
       });
     }
 
-    // Generating JWT tokens
+    // Generating JWT tokens only upon successful login
     const tokenPayload = {
       userId: user.id,
       email: user.email,
@@ -384,7 +366,7 @@ app.post("/refresh-token", async (req, res) => {
 //Endpoint to Logout user
 app.post("/logout", authenticateToken, (req, res) => {
   try {
-    res.clearCookie("refreshToken", {
+    res.clearCookie("refreshToken", { //Clear the token from cookie storage
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
@@ -429,10 +411,11 @@ app.get("/me", authenticateToken, async (req, res) => {
 
 //PRODUCT ENDPOINTS
 
+
 //Endpoint to add a product to the database
-app.post("/postProduct", upload.single("image"), async (req, res) => {
+app.post("/postProduct", upload.single("image"), async (req, res) => { //Middleware to handle the image file that is being uploaded with the product data
   let numericPrice = req.body.originalPrice;
-  if (
+  if ( //To ensure that a null is inserted into the database if the product does not have a discount price. This prevents the database from trying to insert an empty string into the original price field wc has a numeric datatype
     numericPrice === "" ||
     numericPrice === undefined ||
     numericPrice === null
@@ -448,7 +431,7 @@ app.post("/postProduct", upload.single("image"), async (req, res) => {
   }
 
   try {
-    const id = uuidv4();
+    const id = uuidv4(); //Generate a unique id for each product
     const {
       name,
       discount,
@@ -498,7 +481,7 @@ app.post("/postProduct", upload.single("image"), async (req, res) => {
     const insert_query =
       'INSERT INTO products (id,name,image,discount,price,"originalPrice",rating,"ratingCount",category,section,"isNew",colors) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)';
 
-    // Database query now uses promises to ensure consistency
+    // Database query with promises to ensure consistency
     const result = await new Promise((resolve, reject) => {
       server_connect.query(
         insert_query,
@@ -559,7 +542,7 @@ app.get("/getProducts", async (req, res) => {
   try {
     const select_all_query = "SELECT * FROM products ORDER BY id";
     
-    // Convert database query to Promise-based approach (matching POST endpoint)
+    // Database query uses a Promise-based approach (matching POST endpoint)
     const result = await new Promise((resolve, reject) => {
       server_connect.query(select_all_query, [], (err, result) => {
         if (err) {
@@ -599,7 +582,7 @@ app.get("/getProducts", async (req, res) => {
 });
 
 // Endpoint to get products by section e.g FlashSales, BestSelling, ExploreProducts...
-app.get("/getProducts/:section", async (req, res) => {
+app.get("/getProducts/:section", async (req, res) => { //Specific endpoint to fetch products for the various sections of the homepage
   try {
     const section = req.params.section;
     let query;
@@ -662,7 +645,7 @@ app.get("/getProducts/:section", async (req, res) => {
   }
 });
 
-//Endpoint to get products by category e.g 
+//Endpoint to get products by category 
 app.get("/products/category/:category", async (req, res) => {
   try {
     const category = req.params.category;
@@ -1307,18 +1290,6 @@ app.post("/test", (req, res) => {
   });
 });
 
-
-//Error handling Middleware
-// app.use((err, req, res, next) => {
-//   if (err instanceof multer.MulterError) {
-//     if (err.code == "LIMIT_FILE_SIZE") {
-//       return res
-//         .status(400)
-//         .json({ error: "File is too large, Max file size is 5MB. " });
-//     }
-//   }
-//   res.status(500).json({ error: err.message });
-// });
 const port = process.env.PORT ;
 app.listen(port, () => {
   console.log(`Server is running at port ${port}`);
