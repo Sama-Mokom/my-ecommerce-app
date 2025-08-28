@@ -72,5 +72,9 @@ const getCategoryRoute = (category) => {
 .category-list a:hover {
   color: #db4444;
 }
-
+@media (min-width: 1800px){
+ .sidebar{
+  margin-left:0px
+ }
+}
 </style>

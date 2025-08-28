@@ -78,7 +78,7 @@ const getCategoryRoute = (category) => {
 }
 
 .section-header {
-  margin-left: 70px;
+  /* margin-left: 70px; */
   display: inline-block;
   align-items: flex-end;
   justify-content: space-between;

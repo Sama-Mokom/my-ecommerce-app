@@ -11,8 +11,8 @@
             <h2>Best Selling Products</h2>
             <div class="view-all-container">
               <router-link to="/products"
-          ><button class="view-all-btn">View All Products</button>
-        </router-link>
+                ><button class="view-all-btn">View All Products</button>
+              </router-link>
             </div>
           </div>
         </div>
@@ -80,7 +80,7 @@ onMounted(() => {
 
 <style scoped>
 .section-header {
-  margin-left: 45px;
+  /* margin-left: 45px; */
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -102,16 +102,8 @@ onMounted(() => {
 }
 
 .products-grid {
-  margin-bottom: 2rem;
-  margin-left: 40px;
-  display: flex;
-  gap: 30px;
-  margin-bottom: 60px;
-}
-
-.products-grid {
-  margin-left: 40px;
-  display: flex;
+  /* margin-left: 40px; */
+  display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 30px;
   margin-bottom: 60px;
@@ -217,7 +209,6 @@ onMounted(() => {
   margin-top: 2rem;
 }
 
-
 /* Tablet Styles */
 @media (max-width: 1024px) {
   .section-header {
@@ -227,34 +218,34 @@ onMounted(() => {
     align-items: flex-start;
     gap: 20px;
   }
-  
+
   .section-content {
     width: 100%;
     justify-content: space-between;
   }
-  
+
   .section-content h2 {
     font-size: 28px;
   }
-  
+
   .view-all-container {
     margin-left: 0;
     margin-top: 0;
   }
-  
+
   .products-grid {
+    display: flex;
     margin-left: 30px;
     gap: 20px;
     flex-wrap: wrap;
     justify-content: flex-start;
   }
-  
+
   .product-card {
     min-width: 220px;
     flex: 0 1 calc(50% - 10px);
   }
 }
-
 
 /* Mobile Styles */
 @media (max-width: 768px) {
@@ -262,49 +253,50 @@ onMounted(() => {
     margin-left: 20px;
     margin-bottom: 30px;
   }
-  
+
   .section-content {
     flex-direction: column;
     align-items: flex-start;
     height: auto;
     gap: 15px;
   }
-  
+
   .section-content h2 {
     font-size: 24px;
     margin: 0;
   }
-  
+
   .products-grid {
+    display: flex;
     margin-left: 20px;
     margin-right: 20px;
     gap: 15px;
     justify-content: center;
   }
-  
+
   .product-card {
     min-width: 200px;
     flex: 0 1 calc(50% - 7.5px);
     max-width: calc(50% - 7.5px);
   }
-  
+
   .product-image {
     height: 200px;
     padding: 20px;
   }
-  
+
   .product-info h3 {
     font-size: 14px;
   }
-  
+
   .current-price {
     font-size: 14px;
   }
-  
+
   .original-price {
     font-size: 13px;
   }
-  
+
   .rating-count {
     font-size: 12px;
   }
@@ -316,34 +308,35 @@ onMounted(() => {
     margin-left: 15px;
     margin-bottom: 25px;
   }
-  
+
   .section-content h2 {
     font-size: 20px;
   }
-  
+
   .products-grid {
+    display: flex;
     margin-left: 15px;
     margin-right: 15px;
     flex-direction: column;
     align-items: center;
   }
-  
+
   .product-card {
     min-width: unset;
     width: 100%;
     max-width: 280px;
     flex: none;
   }
-  
+
   .product-image {
     height: 180px;
     padding: 15px;
   }
-  
+
   .product-info h3 {
     font-size: 13px;
   }
-  
+
   .view-all-btn {
     padding: 10px 20px;
     font-size: 14px;
@@ -363,9 +356,10 @@ onMounted(() => {
   .no-products {
     padding: 30px 15px;
   }
-  
+
   .error-state p,
   .no-products p {
     font-size: 14px;
-  }}
+  }
+}
 </style>

@@ -1,0 +1,393 @@
+/* ===========================================
+   UNIFIED ALIGNMENT SYSTEM
+   =========================================== */
+
+/* Base alignment variables - these match your Header and TopBanner reference points */
+:root {
+  /* Desktop alignment (1025px and up) */
+  --left-margin-desktop: 60px;    /* Matches Header logo margin-left */
+  --right-margin-desktop: 75px;   /* Matches TopBanner language selector margin-right */
+  --container-padding-desktop: 20px;
+  
+  /* Tablet alignment (769px - 1024px) */
+  --left-margin-tablet: 40px;
+  --right-margin-tablet: 40px;
+  --container-padding-tablet: 15px;
+  
+  /* Mobile alignment (481px - 768px) */
+  --left-margin-mobile: 20px;
+  --right-margin-mobile: 20px;
+  --container-padding-mobile: 10px;
+  
+  /* Small mobile alignment (up to 480px) */
+  --left-margin-small: 15px;
+  --right-margin-small: 15px;
+  --container-padding-small: 5px;
+}
+
+/* ===========================================
+   FLASH SALES COMPONENT ALIGNMENT
+   =========================================== */
+.flash-sales .container {
+  margin-left: var(--left-margin-desktop);
+  margin-right: var(--right-margin-desktop);
+  max-width: none;
+  padding: 0 var(--container-padding-desktop);
+}
+
+/* Tablet styles for Flash Sales */
+@media (max-width: 1024px) {
+  .flash-sales .container {
+    margin-left: var(--left-margin-tablet);
+    margin-right: var(--right-margin-tablet);
+    padding: 0 var(--container-padding-tablet);
+  }
+}
+
+/* Mobile styles for Flash Sales */
+@media (max-width: 768px) {
+  .flash-sales .container {
+    margin-left: var(--left-margin-mobile);
+    margin-right: var(--right-margin-mobile);
+    padding: 0 var(--container-padding-mobile);
+  }
+}
+
+/* Small mobile styles for Flash Sales */
+@media (max-width: 480px) {
+  .flash-sales .container {
+    margin-left: var(--left-margin-small);
+    margin-right: var(--right-margin-small);
+    padding: 0 var(--container-padding-small);
+  }
+}
+
+/* ===========================================
+   BEST SELLING COMPONENT ALIGNMENT
+   =========================================== */
+.best-selling .container {
+  margin-left: var(--left-margin-desktop);
+  margin-right: var(--right-margin-desktop);
+  max-width: none;
+  padding: 0 var(--container-padding-desktop);
+}
+
+.best-selling .section-header {
+  margin-left: 0; /* Reset existing margin */
+}
+
+.best-selling .products-grid {
+  margin-left: 0; /* Reset existing margin */
+  margin-right: 0;
+}
+
+/* Tablet styles for Best Selling */
+@media (max-width: 1024px) {
+  .best-selling .container {
+    margin-left: var(--left-margin-tablet);
+    margin-right: var(--right-margin-tablet);
+    padding: 0 var(--container-padding-tablet);
+  }
+}
+
+/* Mobile styles for Best Selling */
+@media (max-width: 768px) {
+  .best-selling .container {
+    margin-left: var(--left-margin-mobile);
+    margin-right: var(--right-margin-mobile);
+    padding: 0 var(--container-padding-mobile);
+  }
+}
+
+/* Small mobile styles for Best Selling */
+@media (max-width: 480px) {
+  .best-selling .container {
+    margin-left: var(--left-margin-small);
+    margin-right: var(--right-margin-small);
+    padding: 0 var(--container-padding-small);
+  }
+}
+
+/* ===========================================
+   CATEGORIES COMPONENT ALIGNMENT
+   =========================================== */
+.categories .container {
+  margin-left: var(--left-margin-desktop);
+  margin-right: var(--right-margin-desktop);
+  max-width: none;
+  padding: 0 var(--container-padding-desktop);
+}
+
+.categories .section-header {
+  margin-left: 0; /* Reset existing margin */
+}
+
+.categories .categories-grid {
+  margin-left: 0; /* Reset existing margin */
+  margin-right: 0; /* Reset existing margin */
+  padding-left: 0; /* Reset existing padding */
+}
+
+/* Tablet styles for Categories */
+@media (max-width: 1024px) {
+  .categories .container {
+    margin-left: var(--left-margin-tablet);
+    margin-right: var(--right-margin-tablet);
+    padding: 0 var(--container-padding-tablet);
+  }
+}
+
+/* Mobile styles for Categories */
+@media (max-width: 768px) {
+  .categories .container {
+    margin-left: var(--left-margin-mobile);
+    margin-right: var(--right-margin-mobile);
+    padding: 0 var(--container-padding-mobile);
+  }
+}
+
+/* Small mobile styles for Categories */
+@media (max-width: 480px) {
+  .categories .container {
+    margin-left: var(--left-margin-small);
+    margin-right: var(--right-margin-small);
+    padding: 0 var(--container-padding-small);
+  }
+}
+
+/* ===========================================
+   EXPLORE PRODUCTS COMPONENT ALIGNMENT
+   =========================================== */
+.explore-products {
+  margin-left: var(--left-margin-desktop);
+  margin-right: var(--right-margin-desktop);
+}
+
+.explore-products .container {
+  margin: 0 auto;
+  max-width: none;
+  padding: 0 var(--container-padding-desktop);
+}
+
+/* Tablet styles for Explore Products */
+@media (max-width: 1024px) {
+  .explore-products {
+    margin-left: var(--left-margin-tablet);
+    margin-right: var(--right-margin-tablet);
+  }
+  
+  .explore-products .container {
+    padding: 0 var(--container-padding-tablet);
+  }
+}
+
+/* Mobile styles for Explore Products */
+@media (max-width: 768px) {
+  .explore-products {
+    margin-left: var(--left-margin-mobile);
+    margin-right: var(--right-margin-mobile);
+  }
+  
+  .explore-products .container {
+    padding: 0 var(--container-padding-mobile);
+  }
+}
+
+/* Small mobile styles for Explore Products */
+@media (max-width: 480px) {
+  .explore-products {
+    margin-left: var(--left-margin-small);
+    margin-right: var(--right-margin-small);
+  }
+  
+  .explore-products .container {
+    padding: 0 var(--container-padding-small);
+  }
+}
+
+/* ===========================================
+   MUSIC BANNER COMPONENT ALIGNMENT
+   =========================================== */
+.music-banner {
+  margin-left: var(--left-margin-desktop);
+  margin-right: var(--right-margin-desktop);
+  width: auto; /* Change from 90vw to auto */
+}
+
+.music-banner .container {
+  margin-left: 0; /* Reset existing margin */
+  max-width: none;
+  padding: 0 var(--container-padding-desktop);
+}
+
+/* Tablet styles for Music Banner */
+@media (max-width: 1024px) {
+  .music-banner {
+    margin-left: var(--left-margin-tablet);
+    margin-right: var(--right-margin-tablet);
+  }
+  
+  .music-banner .container {
+    padding: 0 var(--container-padding-tablet);
+  }
+}
+
+/* Mobile styles for Music Banner */
+@media (max-width: 768px) {
+  .music-banner {
+    margin-left: var(--left-margin-mobile);
+    margin-right: var(--right-margin-mobile);
+  }
+  
+  .music-banner .container {
+    padding: 0 var(--container-padding-mobile);
+  }
+}
+
+/* Small mobile styles for Music Banner */
+@media (max-width: 480px) {
+  .music-banner {
+    margin-left: var(--left-margin-small);
+    margin-right: var(--right-margin-small);
+  }
+  
+  .music-banner .container {
+    padding: 0 var(--container-padding-small);
+  }
+}
+
+/* ===========================================
+   ADDITIONAL RESPONSIVE ADJUSTMENTS
+   =========================================== */
+
+/* Ensure nav-arrows positioning is responsive */
+.section-content .nav-arrows {
+  margin-left: auto; /* Push arrows to the right */
+  margin-right: 0;
+}
+
+/* Adjust countdown positioning in Flash Sales */
+.flash-sales .countdown {
+  margin-left: 8px;
+  margin-right: auto; /* Allow natural flow */
+}
+
+/* Fix view-all button positioning in Best Selling */
+.best-selling .view-all-container {
+  margin-left: auto; /* Push to right */
+  margin-top: 0;
+}
+
+/* Adjust Categories nav arrows */
+.categories .nav-arrows {
+  margin-left: auto; /* Push to right */
+}
+
+/* Fix Explore Products nav arrows */
+.explore-products .nav-arrows {
+  margin-left: auto; /* Push to right */
+}
+
+/* ===========================================
+   CONSISTENT SECTION SPACING
+   =========================================== */
+
+/* Ensure consistent vertical spacing between sections */
+.flash-sales,
+.best-selling,
+.categories,
+.explore-products,
+.music-banner {
+  margin-top: 70px;
+  margin-bottom: 70px;
+}
+
+/* Responsive vertical spacing */
+@media (max-width: 1024px) {
+  .flash-sales,
+  .best-selling,
+  .categories,
+  .explore-products,
+  .music-banner {
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .flash-sales,
+  .best-selling,
+  .categories,
+  .explore-products,
+  .music-banner {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .flash-sales,
+  .best-selling,
+  .categories,
+  .explore-products,
+  .music-banner {
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+}
+
+/* ===========================================
+   SECTION HEADER CONSISTENCY
+   =========================================== */
+
+/* Ensure all section headers have consistent structure */
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 60px;
+  width: 100%;
+}
+
+.section-header-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+}
+
+.section-content {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  gap: 20px;
+}
+
+/* Responsive section header adjustments */
+@media (max-width: 1024px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-header {
+    margin-bottom: 30px;
+  }
+  
+  .section-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-header {
+    margin-bottom: 25px;
+  }
+}

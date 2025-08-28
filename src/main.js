@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
-import './style.css'
-import './assets/style.css'
+// import './style.css'
+import './assets/CSS/style.css'
 import App from './App.vue'
 import VueSplide from '@splidejs/vue-splide'
 import '@splidejs/splide/dist/css/splide.min.css'
@@ -8,6 +8,7 @@ import router from './components/router.js'
 import { authActions } from '../stores/auth'
 import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
+import './assets/CSS/alignment.css'
 
 
 const initializeApp = async () => {

@@ -111,14 +111,14 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.container {
+/* .container {
   margin-left: 20px;
-  max-width: 1200px;
-  /* margin: 0 auto; */
-  /* padding: 0 20px; */
-}
+  max-width: 1200px; 
+  margin: 0 auto;
+   padding: 0 20px; 
+} */
 .music-banner {
-  margin-left: 95px;
+  /* margin-left: 95px; */
   margin-bottom: 20px;
   width: 90vw;
   background: #000;
@@ -238,7 +238,7 @@ onUnmounted(() => {
     #000
   );
   width: 698px;
-  height: 502px;
+  height: 390px;
 }
 
 @media (max-width: 900px) {
@@ -288,8 +288,13 @@ button:focus, input:focus {
     height: 55px;
   }
     .image-background {
+      display:none;
     width: 500px;
     height: 380px;
+  }
+  .music-banner__image {
+    display:none;
+    max-width: 240px;
   }
 }
 
@@ -382,6 +387,7 @@ button:focus, input:focus {
   }
   
   .music-banner__image {
+    display:none;
     max-width: 240px;
   }
 }

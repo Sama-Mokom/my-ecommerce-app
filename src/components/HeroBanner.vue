@@ -95,19 +95,20 @@ const splideOptions = {
   easing: "cubic-bezier(0.25, 1, 0.5, 1)",
 };
 
-const handleSlideChange = (splide, newIndex)=>{
+const handleSlideChange = (splide, newIndex) => {
   currentSlide.value = newIndex;
 };
-const goToSlide = (index) =>{
-  if (splideRef.value && splideRef.value.splide){
+const goToSlide = (index) => {
+  if (splideRef.value && splideRef.value.splide) {
     splideRef.value.splide.go(index);
   }
-}
+};
 </script>
 
 <style scoped>
 /* Hero Banner */
 .hero-banner {
+  width: 61vw;
   margin-right: 40px;
   background: #000;
   padding: 58px 64px;
@@ -188,5 +189,20 @@ const goToSlide = (index) =>{
 .dot.active {
   background: #db4444;
   border: 2px solid #fff;
+}
+@media (max-width: 900px) {
+  .hero-banner {
+    width: 90vw;
+  }
+}
+@media (min-width: 1800px){
+.hero-banner {
+    width: 75vw;
+  }
+}
+@media (min-width: 1600px){
+.hero-banner {
+    width: 71vw;
+  }
 }
 </style>

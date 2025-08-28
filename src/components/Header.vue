@@ -12,7 +12,7 @@
           class="nav-link"
           :class="{ active: link.active }"
           >{{ link.text }}
-          </router-link>
+        </router-link>
       </nav>
       <div class="header-actions">
         <div class="search-box">
@@ -21,18 +21,32 @@
         </div>
         <div class="header-icons">
           <!-- <i class="far fa-user"></i> -->
-          <router-link to="/wishlist" class="wishlist-link" v-if="isAuthenticated">
+          <router-link
+            to="/wishlist"
+            class="wishlist-link"
+            v-if="isAuthenticated"
+          >
             <i class="far fa-heart heart-icon"></i>
-            <span v-if="wishlistCount > 0" class="wishlist-count">{{ wishlistCount }}</span>
+            <span v-if="wishlistCount > 0" class="wishlist-count">{{
+              wishlistCount
+            }}</span>
           </router-link>
-          <i v-else class="far fa-heart heart-icon" @click="showLoginPrompt"></i>
+          <i
+            v-else
+            class="far fa-heart heart-icon"
+            @click="showLoginPrompt"
+          ></i>
           <router-link to="/cart" class="cart-link" v-if="isAuthenticated">
             <i class="fas fa-shopping-cart cart-icon"></i>
             <span v-if="cartCount > 0" class="cart-count">{{ cartCount }}</span>
           </router-link>
-          <i v-else class="fas fa-shopping-cart cart-icon" @click="showCartLoginPrompt"></i>
+          <i
+            v-else
+            class="fas fa-shopping-cart cart-icon"
+            @click="showCartLoginPrompt"
+          ></i>
           <div
-          v-if="isAuthenticated"
+            v-if="isAuthenticated"
             class="user-dropdown-container"
             @click="toggleDropdown"
             ref="userDropdown"
@@ -77,31 +91,29 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { authActions, authStore, isAuthenticated } from '../../stores/auth';
-import apiService from '../services/api.js';
-import { useToast } from 'vue-toastification';
+import { ref, onMounted, onUnmounted, computed } from "vue";
+import { useRouter } from "vue-router";
+import { authActions, authStore, isAuthenticated } from "../../stores/auth";
+import apiService from "../services/api.js";
+import { useToast } from "vue-toastification";
 
 const router = useRouter();
 const toast = useToast();
 const props = defineProps({
-
   searchIcon: { type: String, default: "/images/search icon.png" },
   cartIcon: { type: String, default: "/images/Cart1.png" },
 });
- const navLinks = computed(() => {
+const navLinks = computed(() => {
   const baseLinks = [
     { text: "Home", to: "/" },
     { text: "Contact", to: "/contact" },
     { text: "About", to: "/about" },
   ];
-  if (!isAuthenticated.value){
-    baseLinks.push({text: "Sign Up", to: "/signup"});
+  if (!isAuthenticated.value) {
+    baseLinks.push({ text: "Sign Up", to: "/signup" });
   }
   return baseLinks;
- })
-
+});
 
 const isDropdownOpen = ref(false);
 const userDropdown = ref(null);
@@ -110,100 +122,99 @@ const cartCount = ref(0); // Added cartCount state
 
 const fetchWishlistCount = async () => {
   if (!isAuthenticated.value) return;
-  
+
   try {
     const response = await apiService.getWishlist();
     wishlistCount.value = response.count || 0;
   } catch (error) {
-    console.error('Error fetching wishlist count:', error);
+    console.error("Error fetching wishlist count:", error);
   }
 };
 
 const fetchCartCount = async () => {
   if (!isAuthenticated.value) return;
-  
+
   try {
     const response = await apiService.getCart();
     cartCount.value = response.count || 0;
   } catch (error) {
-    console.error('Error fetching cart count:', error);
+    console.error("Error fetching cart count:", error);
   }
 };
 
 const showLoginPrompt = () => {
-  alert('Please login to view your wishlist');
-  router.push('/signin');
+  alert("Please login to view your wishlist");
+  router.push("/signin");
 };
 
 const showCartLoginPrompt = () => {
-  alert('Please login to view your cart');
-  router.push('/signin');
+  alert("Please login to view your cart");
+  router.push("/signin");
 };
 
-const toggleDropdown = () =>{
-  isDropdownOpen.value = !isDropdownOpen.value
-}
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
+};
 
 const handleMenuClick = async (action) => {
-  console.log(`${action} clicked`)
+  console.log(`${action} clicked`);
   isDropdownOpen.value = false;
 
-    // Handle different menu actions
-  switch(action) {
-    case 'account':
+  // Handle different menu actions
+  switch (action) {
+    case "account":
       // Navigate to account management
-      router.push('/account');
+      router.push("/account");
       break;
-    case 'orders':
+    case "orders":
       // Navigate to orders page
-      router.push('/orders');
+      router.push("/orders");
       break;
-    case 'cancellations':
+    case "cancellations":
       // Navigate to cancellations page
-      router.push('/cancellations');
+      router.push("/cancellations");
       break;
-    case 'reviews':
+    case "reviews":
       // Navigate to reviews page
-      router.push('/reviews')
+      router.push("/reviews");
       break;
-    case 'logout':
+    case "logout":
       // Handle logout logic here, then redirect user to homepage
-      try{
+      try {
         await authActions.logout();
-        console.log('User logged out successfully')
+        console.log("User logged out successfully");
         toast.info("Logout Successful, redirecting to home page", {
-        position: 'top-right',
-        timeout: 3000,
-        icon: '❤️',
-      });
-        router.push('/');
-      } catch (error){
-        console.error('Logout failed: ', error)
+          position: "top-right",
+          timeout: 3000,
+          icon: "❤️",
+        });
+        router.push("/");
+      } catch (error) {
+        console.error("Logout failed: ", error);
         toast.error("Login Failed, Please try again later", {
-        position: 'top-right',
-        timeout: 3000,
-        icon: '❤️',
-      });
+          position: "top-right",
+          timeout: 3000,
+          icon: "❤️",
+        });
       }
       break;
   }
-}
+};
 
-const handleClickOutside = (event) =>{
-    if (userDropdown.value && !userDropdown.value.contains(event.target)){
-      isDropdownOpen.value = false
-    }
+const handleClickOutside = (event) => {
+  if (userDropdown.value && !userDropdown.value.contains(event.target)) {
+    isDropdownOpen.value = false;
   }
+};
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
+  document.addEventListener("click", handleClickOutside);
   fetchWishlistCount(); // Fetch wishlist count on mount
   fetchCartCount(); // Fetch cart count on mount
-})
+});
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
-
+  document.removeEventListener("click", handleClickOutside);
+});
 </script>
 
 <style scoped>
@@ -222,6 +233,7 @@ onUnmounted(() => {
 }
 
 .header .container {
+  margin-right: 26px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -248,7 +260,8 @@ onUnmounted(() => {
   color: #db4444;
 }
 
-.nav-link.router-link-active::after,.nav-link.router-link-exact-active::after {
+.nav-link.router-link-active::after,
+.nav-link.router-link-exact-active::after {
   content: "";
   position: absolute;
   bottom: -4px;
@@ -283,31 +296,29 @@ onUnmounted(() => {
   width: 200px;
 }
 
- .search-box input:focus{
-     outline: 2px solid transparent; 
-     outline-offset: 2px;
-} 
+.search-box input:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
 
 .search-box i {
   color: #000;
   cursor: pointer;
 }
 
-
-
 .header-icons i {
-    position: relative;
-    height: 36px;
-    width: 33.5px;
-    font-size: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
+  position: relative;
+  height: 36px;
+  width: 33.5px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 
- .header-icons {
+.header-icons {
   position: relative;
   display: flex;
   gap: 16px;
@@ -325,12 +336,13 @@ onUnmounted(() => {
   border-radius: 4px;
 }
 
-.user-icon:hover,.heart-icon:hover, .cart-icon:hover,
+.user-icon:hover,
+.heart-icon:hover,
+.cart-icon:hover,
 .user-icon.active {
   background-color: #f5f5f5;
   color: #db4444;
 }
-
 
 .dropdown-menu {
   position: absolute;
@@ -468,17 +480,17 @@ onUnmounted(() => {
   .logo {
     margin-left: 30px;
   }
-  
+
   .nav {
     margin-left: 30px;
     gap: 20px;
   }
-  
+
   .header-actions {
     margin-right: 20px;
     gap: 18px;
   }
-   .search-box input {
+  .search-box input {
     width: 150px;
   }
 }
@@ -496,7 +508,7 @@ onUnmounted(() => {
     flex: 1;
     text-align: center;
   }
-  
+
   .nav {
     order: 3;
     width: 100%;
@@ -504,12 +516,12 @@ onUnmounted(() => {
     margin: 15px 0 0 0;
     gap: 15px;
   }
-   .header-actions {
+  .header-actions {
     order: 2;
     margin-right: 0;
     gap: 15px;
   }
-  
+
   .search-box {
     display: none;
   }
@@ -523,25 +535,25 @@ onUnmounted(() => {
   .header {
     padding: 12px 0;
   }
-  
+
   .logo h2 {
     font-size: 20px;
   }
-  
+
   .nav {
     gap: 10px;
     font-size: 14px;
   }
-   .header-actions {
+  .header-actions {
     gap: 12px;
   }
-  
+
   .header-icons i {
     font-size: 18px;
     height: 32px;
     width: 30px;
   }
-  
+
   .wishlist-count,
   .cart-count {
     width: 14px;
@@ -552,13 +564,39 @@ onUnmounted(() => {
     right: -30px;
     min-width: 160px;
   }
-  
+
   .dropdown-item {
     padding: 10px 12px;
   }
-  
+
   .dropdown-item span {
     font-size: 13px;
   }
+}
+@media (min-width: 1800px) {
+  .header .container {
+    margin-left: 1px;
+  }
+  .header-actions {
+    margin-right: -630px;
+  }
+}
+@media (min-width: 1600px) {
+  .header .container {
+    margin-left: 62px;
+  }
+  .header-actions {
+    margin-right: -330px;
+  }
+  
+}
+@media (min-width: 2400px) {
+  .header .container {
+    margin-left: 1px;
+  }
+  .header-actions {
+    margin-right: -1210px;
+  }
+  
 }
 </style>

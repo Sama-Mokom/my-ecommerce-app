@@ -280,8 +280,8 @@ onUnmounted(() => {
 }
 
 .container {
-  margin-right: 50px;
-  margin-left: 90px;
+  /* margin-right: 50px;
+  margin-left: 90px; */
   max-width: 1200px;
   /* margin: 90px; */
   padding: 0 20px;

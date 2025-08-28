@@ -29,3 +29,11 @@ import ExploreProducts from './ExploreProducts.vue'
 import NewArrival from './NewArrival.vue'
 import Services from './Services.vue'
 </script>
+<style scoped>
+.container{
+  margin-left: var(--left-margin-desktop);
+  margin-right: var(--right-margin-desktop);
+  max-width: none;
+  padding: 0 var(--container-padding-desktop);
+}
+</style>

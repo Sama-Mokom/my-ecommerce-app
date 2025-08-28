@@ -90,6 +90,7 @@
 /* Tablet Styles */
 @media (max-width: 1024px) {
   .service-features {
+    align-items: center;
     padding: 50px 15px;
     gap: 20px;
   }
@@ -121,6 +122,7 @@
 /* Mobile Styles */
 @media (max-width: 768px) {
   .service-features {
+    align-items: center;
     flex-direction: column;
     text-align: center;
     padding: 40px 20px;
@@ -161,6 +163,7 @@
   .service-features {
     padding: 30px 15px;
     gap: 30px;
+    align-items: center;
   }
   
   .feature-title {
