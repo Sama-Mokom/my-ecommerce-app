@@ -205,4 +205,9 @@ const goToSlide = (index) => {
     width: 71vw;
   }
 }
+@media (min-width: 2400px){
+.hero-banner {
+    width: 81vw;
+  }
+}
 </style>
